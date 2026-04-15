@@ -1071,16 +1071,166 @@
     /* Badge */
     #view-workspace .sb-badge { background: var(--cream); color: var(--ink); }
 
-    /* RESPONSIVE */
+    /* ══════════════════════════════════════
+       RESPONSIVE — TABLET (≤860px)
+       ══════════════════════════════════════ */
     @media (max-width: 860px) {
-      .login-brand { display: none; }
       .stat-strip { grid-template-columns: repeat(2,1fr); }
+      .g2, .g3, .g4 { grid-template-columns: 1fr; }
     }
+
+    /* ══════════════════════════════════════
+       RESPONSIVE — MOBILE (≤600px)
+       ══════════════════════════════════════ */
     @media (max-width: 600px) {
-      :root { --sidebar-w: 0px; }
-      .sidebar { display: none; }
-      .topbar { padding: 0 14px; }
-      .sect { padding: 18px 14px; }
+      :root {
+        --sidebar-w: 0px;
+        --msg-list-w: 0px;
+      }
+
+      /* ── Layout ── */
+      html, body { overflow: auto; }
+      .view { position: relative; min-height: 100dvh; }
+      #view-app { flex-direction: column; overflow: auto; }
+      .main { overflow: visible; }
+
+      /* ── Login ── */
+      .login-center { width: calc(100vw - 40px); }
+
+      /* ── Sidebars hidden on mobile ── */
+      #sb-projects,
+      #sb-project-nav { display: none !important; }
+
+      /* ── Project picker ── */
+      #view-projects {
+        min-height: 100dvh;
+        overflow: visible;
+      }
+      #view-projects > div:last-child {
+        padding: 40px 24px 48px;
+        justify-content: flex-start;
+        padding-top: 56px;
+      }
+      #proj-welcome { font-size: 36px !important; }
+      #proj-cards { width: 100% !important; }
+
+      /* ── New project page ── */
+      #view-new-project { min-height: 100dvh; overflow: visible; }
+      #view-new-project > div:last-child { padding: 32px 24px; align-items: flex-start; }
+
+      /* ── Workspace ── */
+      #view-workspace {
+        min-height: 100dvh;
+        overflow: visible;
+        display: flex !important;
+      }
+      .scroll { overflow: visible; height: auto; }
+
+      /* ── Topbar ── */
+      .topbar { padding: 0 16px; height: 48px; position: sticky; top: 0; z-index: 10; }
+      .tb-right { display: none; }
+
+      /* ── Mobile nav bar (bottom) ── */
+      #mobile-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0; left: 0; right: 0;
+        height: 56px;
+        background: var(--ink-2);
+        border-top: 1px solid var(--rule);
+        z-index: 50;
+        align-items: stretch;
+      }
+      .mob-nav-item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        font-size: 8px;
+        font-weight: 600;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        color: var(--fg-3);
+        cursor: pointer;
+        transition: color .2s;
+        -webkit-tap-highlight-color: transparent;
+        border: none;
+        background: none;
+        font-family: var(--sans);
+      }
+      .mob-nav-item svg { opacity: .55; transition: opacity .2s; }
+      .mob-nav-item.active { color: var(--cream); }
+      .mob-nav-item.active svg { opacity: 1; }
+
+      /* Add bottom padding so content clears the nav bar */
+      .page { padding-bottom: 72px; }
+      #page-messages { padding-bottom: 0; }
+
+      /* ── Sections + panels ── */
+      .sect { padding: 20px 16px; }
+      .panel-head { padding: 16px 16px; }
+      .panel-body { padding: 16px; }
+
+      /* ── Stat strip ── */
+      .stat-strip { grid-template-columns: repeat(2,1fr); }
+      .stat-cell { padding: 20px 16px; }
+      .stat-num { font-size: 28px !important; }
+
+      /* ── Overview 2-col grid → 1 col ── */
+      #page-dashboard > div:not(.stat-strip) {
+        grid-template-columns: 1fr !important;
+      }
+
+      /* ── Milestones 2-col → 1 col ── */
+      #page-milestones .sect > div[style*="grid"] {
+        grid-template-columns: 1fr !important;
+      }
+
+      /* ── Invoice table ── */
+      .inv-table thead { display: none; }
+      .inv-table tr { display: block; padding: 14px 0; border-bottom: 1px solid var(--rule); }
+      .inv-table td {
+        display: flex; justify-content: space-between;
+        padding: 3px 16px; border: none;
+        font-size: 12px;
+      }
+      .inv-table td::before {
+        content: attr(data-label);
+        font-size: 9px; font-weight: 600;
+        letter-spacing: .08em; text-transform: uppercase;
+        color: var(--fg-3); flex-shrink: 0; margin-right: 12px;
+        padding-top: 1px;
+      }
+      #page-invoices .panel { margin: 0 16px 24px !important; }
+      #page-invoices .sect { padding-bottom: 20px !important; }
+
+      /* ── Messages: full width thread, hide list ── */
+      .msg-shell { flex-direction: column; height: calc(100dvh - 48px - 56px); }
+      .msg-list { display: none; }
+      .msg-thread { height: 100%; }
+
+      /* ── Deliverables ── */
+      #page-files > div[style*="padding"] { padding: 16px !important; }
+
+      /* ── Settings grid → 1 col ── */
+      #page-settings .sect > div[style*="grid"] {
+        grid-template-columns: 1fr !important;
+      }
+
+      /* ── Project title header ── */
+      #page-dashboard > div:first-child {
+        padding: 20px 16px 16px !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px;
+      }
+      #dash-project-type { font-size: 24px !important; }
+
+      /* ── Hover → tap for deliverables accordion ── */
+      .deliv-panel:focus-within .deliv-files,
+      .deliv-panel:active .deliv-files { max-height: 400px; }
     }
   </style>
 </head>
@@ -1595,18 +1745,18 @@
             <thead><tr><th>Invoice</th><th>Description</th><th>Amount</th><th>Due</th><th>Status</th></tr></thead>
             <tbody>
               <tr>
-                <td><span class="inv-num">001</span></td>
-                <td>Project Deposit — 30% down payment</td>
-                <td style="color:var(--ember);font-weight:500;">£590</td>
-                <td style="color:var(--ember);">Due now</td>
-                <td><span class="status-sq s-due">Unpaid</span></td>
+                <td data-label="Invoice"><span class="inv-num">001</span></td>
+                <td data-label="Description">Project Deposit — 30% down payment</td>
+                <td data-label="Amount" style="color:var(--ember);font-weight:500;">£590</td>
+                <td data-label="Due" style="color:var(--ember);">Due now</td>
+                <td data-label="Status"><span class="status-sq s-due">Unpaid</span></td>
               </tr>
               <tr>
-                <td><span class="inv-num">002</span></td>
-                <td>Final payment — due on website publish &amp; go-live</td>
-                <td>£1,370</td>
-                <td>On delivery</td>
-                <td><span class="status-sq s-sched">Upcoming</span></td>
+                <td data-label="Invoice"><span class="inv-num">002</span></td>
+                <td data-label="Description">Final payment — due on website publish &amp; go-live</td>
+                <td data-label="Amount">£1,370</td>
+                <td data-label="Due">On delivery</td>
+                <td data-label="Status"><span class="status-sq s-sched">Upcoming</span></td>
               </tr>
             </tbody>
           </table>
@@ -1698,6 +1848,41 @@
 
 <div id="toasts"></div>
 <div id="expand-overlay"></div>
+
+<!-- Mobile bottom nav (hidden on desktop via CSS) -->
+<nav id="mobile-nav" style="display:none;">
+  <button class="mob-nav-item active" data-page="dashboard" onclick="mobNav(this)">
+    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+      <rect x="1" y="1" width="6" height="6"/><rect x="9" y="1" width="6" height="6"/>
+      <rect x="1" y="9" width="6" height="6"/><rect x="9" y="9" width="6" height="6"/>
+    </svg>
+    Overview
+  </button>
+  <button class="mob-nav-item" data-page="updates" onclick="mobNav(this)">
+    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+      <path d="M2 2h12v9H9l-1 2-1-2H2z"/>
+    </svg>
+    Updates
+  </button>
+  <button class="mob-nav-item" data-page="messages" onclick="mobNav(this)">
+    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+      <path d="M14 3H2v7h3v2.5L8 10h6V3z"/>
+    </svg>
+    Messages
+  </button>
+  <button class="mob-nav-item" data-page="invoices" onclick="mobNav(this)">
+    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+      <rect x="2" y="2" width="12" height="12"/><path d="M5 8h6M5 5h6M5 11h3"/>
+    </svg>
+    Invoices
+  </button>
+  <button class="mob-nav-item" data-page="milestones" onclick="mobNav(this)">
+    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+      <circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/>
+    </svg>
+    Timeline
+  </button>
+</nav>
 
 <script>
 /* ════════════════════════════════════════════════
@@ -1914,6 +2099,7 @@ function handleLogin(ev) {
 function logout() {
   me = null;
   activeProject = null;
+  showMobileNav(false);
   document.getElementById('view-app').classList.add('hidden');
   document.getElementById('view-login').classList.remove('hidden');
   document.getElementById('lp').value = '';
@@ -2157,6 +2343,11 @@ function nav(el) {
 }
 
 function showPage(id) {
+  // Sync mobile nav highlight
+  document.querySelectorAll('.mob-nav-item').forEach(b => {
+    b.classList.toggle('active', b.dataset.page === id);
+  });
+
   document.querySelectorAll('.page').forEach(p => {
     p.classList.remove('active');
     p.style.display = '';
@@ -2379,6 +2570,7 @@ function openProject(name) {
     if (THREADS[threadKey]) selectConvo(threadKey);
   }
 
+  showMobileNav(true);
   showPage('dashboard');
 }
 
@@ -2408,6 +2600,7 @@ function backToProjects() {
   });
   // Re-render cards so their cardIn animation fires fresh
   renderProjCards();
+  showMobileNav(false);
 }
 
 function openNewProject() {
@@ -2428,6 +2621,24 @@ function submitNewProject() {
   if (!text) return;
   document.getElementById('new-proj-form-wrap').style.display = 'none';
   document.getElementById('new-proj-confirm').style.display = 'block';
+}
+
+/* ════════════════════════════════════════════════
+   MOBILE NAV
+════════════════════════════════════════════════ */
+function isMobile() { return window.innerWidth <= 600; }
+
+function mobNav(el) {
+  document.querySelectorAll('.mob-nav-item').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  showPage(el.dataset.page);
+  // scroll workspace to top on mobile
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showMobileNav(visible) {
+  const nav = document.getElementById('mobile-nav');
+  if (nav) nav.style.display = visible && isMobile() ? 'flex' : 'none';
 }
 
 /* ════════════════════════════════════════════════
