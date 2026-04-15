@@ -1088,49 +1088,47 @@
         --msg-list-w: 0px;
       }
 
-      /* ── Layout ── */
+      /* ══ GLOBAL LAYOUT ══ */
       html, body { overflow: auto; }
       .view { position: relative; min-height: 100dvh; }
       #view-app { flex-direction: column; overflow: auto; }
       .main { overflow: visible; }
+      .scroll { overflow: visible; height: auto; }
 
-      /* ── Login ── */
+      /* ══ LOGIN ══ */
       .login-center { width: calc(100vw - 40px); }
 
-      /* ── Sidebars hidden on mobile ── */
+      /* ══ SIDEBARS — hidden on mobile ══ */
       #sb-projects,
       #sb-project-nav { display: none !important; }
 
-      /* ── Project picker ── */
-      #view-projects {
-        min-height: 100dvh;
-        overflow: visible;
-      }
+      /* ══ PROJECT PICKER ══ */
+      #view-projects { min-height: 100dvh; overflow: visible; }
       #view-projects > div:last-child {
-        padding: 40px 24px 48px;
+        padding: 48px 20px 60px;
         justify-content: flex-start;
-        padding-top: 56px;
       }
-      #proj-welcome { font-size: 36px !important; }
+      #proj-welcome { font-size: 30px !important; }
       #proj-cards { width: 100% !important; }
+      .proj-card { padding: 18px 20px; }
+      .proj-card-name { font-size: 17px; margin-bottom: 10px; }
 
-      /* ── New project page ── */
+      /* ══ NEW PROJECT PAGE ══ */
       #view-new-project { min-height: 100dvh; overflow: visible; }
-      #view-new-project > div:last-child { padding: 32px 24px; align-items: flex-start; }
+      #view-new-project > div:last-child { padding: 32px 20px; align-items: flex-start; }
 
-      /* ── Workspace ── */
+      /* ══ WORKSPACE SHELL ══ */
       #view-workspace {
         min-height: 100dvh;
         overflow: visible;
         display: flex !important;
       }
-      .scroll { overflow: visible; height: auto; }
 
-      /* ── Topbar ── */
+      /* ══ TOPBAR ══ */
       .topbar { padding: 0 16px; height: 48px; position: sticky; top: 0; z-index: 10; }
       .tb-right { display: none; }
 
-      /* ── Mobile nav bar (bottom) ── */
+      /* ══ MOBILE BOTTOM NAV ══ */
       #mobile-nav {
         display: flex;
         position: fixed;
@@ -1164,73 +1162,113 @@
       .mob-nav-item.active { color: var(--cream); }
       .mob-nav-item.active svg { opacity: 1; }
 
-      /* Add bottom padding so content clears the nav bar */
+      /* ══ PAGE BASE ══ */
       .page { padding-bottom: 72px; }
       #page-messages { padding-bottom: 0; }
 
-      /* ── Sections + panels ── */
-      .sect { padding: 20px 16px; }
-      .panel-head { padding: 16px 16px; }
-      .panel-body { padding: 16px; }
+      /* ══ SECTION + PANEL SPACING ══ */
+      .sect { padding: 18px 16px; }
+      .panel-head { padding: 13px 16px; }
+      .panel-body { padding: 14px 16px; }
 
-      /* ── Stat strip ── */
+      /* ══ PAGE HEADERS (ph) ══ */
+      .ph { margin-bottom: 16px; }
+      .ph-title { font-size: 22px; }
+
+      /* ══ OVERVIEW — project title header ══ */
+      #page-dashboard > div:first-child {
+        padding: 18px 16px 14px !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px;
+      }
+      #dash-project-type { font-size: 22px !important; }
+
+      /* ══ STAT STRIP ══ */
       .stat-strip { grid-template-columns: repeat(2,1fr); }
-      .stat-cell { padding: 20px 16px; }
-      .stat-num { font-size: 28px !important; }
+      .stat-cell { padding: 16px 14px; }
+      .stat-num { font-size: 26px !important; }
+      /* Kill inline font-size overrides on invoice stats */
+      #page-invoices .stat-num { font-size: 26px !important; }
 
-      /* ── Overview 2-col grid → 1 col ── */
-      #page-dashboard > div:not(.stat-strip) {
-        grid-template-columns: 1fr !important;
+      /* ══ OVERVIEW — 2-col content grid → single column ══ */
+      #page-dashboard > div[style*="grid"] {
+        display: block !important;
+      }
+      #page-dashboard > div[style*="grid"] > div:first-child {
+        border-right: none !important;
+        border-bottom: 1px solid var(--rule);
       }
 
-      /* ── Milestones 2-col → 1 col ── */
+      /* ══ PROGRESS BARS ══ */
+      .prog-row { margin-bottom: 12px; }
+      .prog-name { font-size: 11px; }
+      .prog-pct { font-size: 13px; }
+
+      /* ══ FEED ITEMS ══ */
+      .feed-item { padding: 14px 16px; gap: 12px; }
+      .fi-title { font-size: 13px; }
+      .fi-body { font-size: 12px; }
+      .fi-cat { font-size: 8px; }
+
+      /* ══ MILESTONES — 2-col → 1 col ══ */
       #page-milestones .sect > div[style*="grid"] {
-        grid-template-columns: 1fr !important;
+        display: block !important;
       }
+      #page-milestones .sect > div[style*="grid"] > div:last-child {
+        margin-top: 16px;
+      }
+      .ms-item { padding: 10px 16px; gap: 10px; }
+      .ms-name { font-size: 12px; }
 
-      /* ── Invoice table ── */
+      /* ══ DELIVERABLES ══ */
+      #page-files > div[style*="padding"] { padding: 12px 16px !important; }
+      .deliv-head { padding: 13px 16px; }
+      .deliv-panel { margin-bottom: 10px; }
+      .file-row { padding: 10px 16px; gap: 10px; }
+      .file-name { font-size: 12px; }
+      .file-meta { font-size: 10px; }
+
+      /* ══ DELIVERABLES accordion: hover → tap ══ */
+      .deliv-panel:focus-within .deliv-files,
+      .deliv-panel:active .deliv-files { max-height: 400px; }
+
+      /* ══ INVOICES ══ */
+      #page-invoices .sect { padding-bottom: 0 !important; }
+      #page-invoices > div[style*="height:64px"] { height: 24px !important; }
+      #page-invoices .panel { margin: 0 16px 24px !important; }
       .inv-table thead { display: none; }
-      .inv-table tr { display: block; padding: 14px 0; border-bottom: 1px solid var(--rule); }
+      .inv-table tbody tr { display: block; padding: 12px 0; border-bottom: 1px solid var(--rule); }
       .inv-table td {
-        display: flex; justify-content: space-between;
-        padding: 3px 16px; border: none;
-        font-size: 12px;
+        display: flex; justify-content: space-between; align-items: baseline;
+        padding: 3px 16px; border: none; font-size: 12px;
       }
       .inv-table td::before {
         content: attr(data-label);
         font-size: 9px; font-weight: 600;
         letter-spacing: .08em; text-transform: uppercase;
         color: var(--fg-3); flex-shrink: 0; margin-right: 12px;
-        padding-top: 1px;
       }
-      #page-invoices .panel { margin: 0 16px 24px !important; }
-      #page-invoices .sect { padding-bottom: 20px !important; }
+      .alert-strip { padding: 12px 16px; font-size: 11px; }
 
-      /* ── Messages: full width thread, hide list ── */
-      .msg-shell { flex-direction: column; height: calc(100dvh - 48px - 56px); }
+      /* ══ MESSAGES ══ */
+      #page-messages { height: calc(100dvh - 48px - 56px) !important; }
+      .msg-shell { flex-direction: column; height: 100%; }
       .msg-list { display: none; }
       .msg-thread { height: 100%; }
+      .msg-thread-head { padding: 12px 14px; }
+      .msg-input-bar { padding: 8px 12px; gap: 8px; }
 
-      /* ── Deliverables ── */
-      #page-files > div[style*="padding"] { padding: 16px !important; }
-
-      /* ── Settings grid → 1 col ── */
+      /* ══ SETTINGS — 2-col → 1 col ══ */
       #page-settings .sect > div[style*="grid"] {
-        grid-template-columns: 1fr !important;
+        display: block !important;
       }
-
-      /* ── Project title header ── */
-      #page-dashboard > div:first-child {
-        padding: 20px 16px 16px !important;
-        flex-direction: column !important;
-        align-items: flex-start !important;
-        gap: 10px;
+      #page-settings .sect > div[style*="grid"] > div + div {
+        margin-top: 16px;
       }
-      #dash-project-type { font-size: 24px !important; }
-
-      /* ── Hover → tap for deliverables accordion ── */
-      .deliv-panel:focus-within .deliv-files,
-      .deliv-panel:active .deliv-files { max-height: 400px; }
+      .srow { padding: 12px 0; gap: 10px; }
+      .srow-label { font-size: 12px; }
+      .srow-sub { font-size: 10px; }
     }
   </style>
 </head>
