@@ -853,6 +853,224 @@
     /* EMPTY */
     .empty { padding: 40px 20px; text-align: center; color: var(--fg-3); font-size: 12px; }
 
+    /* ── CARD EXPAND TRANSITION ── */
+    #expand-overlay {
+      position: fixed;
+      z-index: 999;
+      background: #ede5cc;
+      border: 1px solid rgba(42,28,8,0.18);
+      pointer-events: none;
+      opacity: 0;
+    }
+    #expand-overlay.expanding {
+      opacity: 1;
+      border-color: transparent;
+      transition:
+        top    0.6s cubic-bezier(0.77,0,0.18,1),
+        left   0.6s cubic-bezier(0.77,0,0.18,1),
+        width  0.6s cubic-bezier(0.77,0,0.18,1),
+        height 0.6s cubic-bezier(0.77,0,0.18,1),
+        border-color 0.1s ease;
+    }
+
+    /* ══════════════════════════════════════
+       WORKSPACE LIGHT THEME
+       Main content area only — sidebar stays dark
+       ══════════════════════════════════════ */
+    #view-workspace {
+      --ink:        #ede5cc;
+      --ink-2:      #e2d8b0;
+      --ink-3:      #d6ca98;
+      --rule:       rgba(42,28,8,0.11);
+      --rule-hi:    rgba(42,28,8,0.20);
+      --fg:         #1c1208;
+      --fg-2:       #4a3a20;
+      --fg-3:       #6e5830;
+      --fg-4:       #9a8055;
+      --cream:      #1c1208;
+      --cream-lo:   rgba(28,18,8,0.07);
+      --cream-rule: rgba(28,18,8,0.22);
+      background: var(--ink);
+      color: var(--fg);
+    }
+
+    /* Topbar */
+    /* Topbar stays dark */
+    #view-workspace .topbar {
+      background: rgba(9,9,13,0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom-color: rgba(237,229,204,0.09);
+    }
+    #view-workspace .tb-title,
+    #view-workspace .tb-path { color: #f0ece0; }
+    #view-workspace .tb-sep  { background: rgba(237,229,204,0.16); }
+    #view-workspace .tb-icon {
+      border-color: rgba(237,229,204,0.16);
+      color: #9c9680;
+    }
+    #view-workspace .tb-icon:hover {
+      background: rgba(255,255,255,0.04);
+      color: #f0ece0;
+    }
+
+    /* Hover states on light bg */
+    #view-workspace .feed-item:hover { background: rgba(0,0,0,0.04); }
+    #view-workspace .stat-cell:hover  { background: rgba(0,0,0,0.03); }
+    #view-workspace .file-row:hover   { background: rgba(0,0,0,0.04); }
+    #view-workspace .inv-table tr:hover td { background: rgba(0,0,0,0.03); }
+    #view-workspace .msg-convo:hover  { background: rgba(0,0,0,0.05); }
+    #view-workspace .msg-convo.active { background: rgba(0,0,0,0.08); border-left-color: var(--cream); }
+
+    /* Panels — transparent fill, thin dark outline */
+    #view-workspace .panel {
+      background: transparent;
+      border: 1px solid rgba(28,18,8,0.18);
+    }
+    #view-workspace .panel-head {
+      border-bottom-color: rgba(28,18,8,0.12);
+    }
+    #view-workspace .stat-strip {
+      border-color: rgba(28,18,8,0.12);
+    }
+    #view-workspace .stat-cell {
+      border-right-color: rgba(28,18,8,0.12);
+    }
+
+    /* Message chat area */
+    #view-workspace .msg-thread-head,
+    #view-workspace .msg-input-bar { background: rgba(237,229,204,0.6); }
+    #view-workspace .msg-input {
+      background: var(--ink);
+      border-color: rgba(42,28,8,0.20);
+      color: var(--fg);
+    }
+    #view-workspace .msg-input::placeholder { color: var(--fg-4); }
+    #view-workspace .msg-input:focus {
+      border-color: var(--cream);
+      box-shadow: 0 0 0 2px rgba(28,18,8,0.10);
+    }
+    #view-workspace .bubble-committa .bubble-body {
+      background: rgba(0,0,0,0.07);
+      border-color: rgba(0,0,0,0.18);
+    }
+    #view-workspace .bubble-client .bubble-body {
+      background: rgba(255,255,255,0.55);
+      border-color: rgba(0,0,0,0.12);
+    }
+    #view-workspace .msg-send {
+      background: var(--cream);
+      color: var(--ink);
+    }
+
+    /* Progress fills stay visible on light bg */
+    #view-workspace .prog-track { background: rgba(0,0,0,0.10); }
+
+    /* Scrollbar on light bg */
+    #view-workspace .scroll::-webkit-scrollbar-thumb { background: rgba(42,28,8,0.20); }
+
+    /* Alert strip */
+    #view-workspace .alert-strip {
+      background: rgba(251,146,60,0.08);
+      border-top-color: rgba(251,146,60,0.35);
+    }
+
+    /* Dashboard project title header */
+    #view-workspace #dash-project-type { color: var(--fg); }
+
+    /* ── COLOUR REPLACEMENTS ON BEIGE ──
+       Swap pale/light tones for dark blue or near-black.
+       Green (emerald) kept for ticks + active indicators.
+    ── */
+
+    /* All accent colours → dark navy (inline vars picked up automatically) */
+    #view-workspace { --sky: #1a4a8a; --blue: #1a4a8a; --ember: #1a4a8a; }
+
+    /* Chips */
+    #view-workspace .chip-sky   { border-color: rgba(26,74,138,.30); color: #1a4a8a; }
+    #view-workspace .chip-ember { border-color: rgba(28,18,8,.22);   color: var(--fg-2); }
+    #view-workspace .chip-cream { border-color: rgba(28,18,8,.22);   color: var(--fg-2); }
+    #view-workspace .chip-new   { border-color: rgba(28,18,8,.22);   color: var(--fg-2); }
+
+    /* Page eyebrow labels */
+    #view-workspace .ph-eye   { color: var(--fg-3); opacity: 1; }
+    #view-workspace .panel-title { color: var(--fg-3); }
+    #view-workspace .panel-act   { color: #1a4a8a; }
+    #view-workspace .panel-act:hover { opacity: .7; }
+
+    /* Feed glyphs */
+    #view-workspace .feed-glyph { border-color: rgba(28,18,8,.18); color: var(--fg-2); }
+
+    /* Stat strip */
+    #view-workspace .stat-warn { color: #1a4a8a; }
+    #view-workspace .stat-up   { color: var(--emerald); } /* keep green */
+
+    /* Invoice status */
+    #view-workspace .s-due  { color: #1a4a8a; }
+    #view-workspace .s-due::before  { background: #1a4a8a; }
+    #view-workspace .s-sched { color: var(--fg-3); }
+    #view-workspace .s-sched::before { background: var(--fg-3); }
+
+    /* Milestone nodes */
+    #view-workspace .ms-node.now  { border-color: #1a4a8a; color: #1a4a8a; background: rgba(26,74,138,.07); }
+    #view-workspace .ms-node.next { border-color: rgba(28,18,8,.25); color: var(--fg-3); }
+    #view-workspace .ms-when.now  { color: #1a4a8a; }
+
+    /* Progress bars — all dark navy */
+    #view-workspace .prog-fill      { background: #1a4a8a; }
+    #view-workspace .prog-fill.sky  { background: #1a4a8a; }
+    #view-workspace .prog-fill.dim  { background: #1a4a8a; }
+    #view-workspace .prog-fill.em   { background: #1a4a8a; }
+
+    /* File download arrow */
+    #view-workspace .file-dl { color: var(--fg-3); }
+    #view-workspace .file-row:hover .file-dl { color: #1a4a8a; }
+
+    /* ── DELIVERABLES ACCORDION ── */
+    .deliv-panel {
+      margin-bottom: 12px;
+      border: 1px solid rgba(28,18,8,0.18);
+      overflow: hidden;
+      transition: box-shadow .25s var(--ease);
+    }
+    .deliv-panel:hover {
+      box-shadow: 0 4px 18px rgba(28,18,8,0.08);
+    }
+    .deliv-head {
+      padding: 18px 28px;
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: default;
+      user-select: none;
+    }
+    .deliv-head-left { display: flex; align-items: center; gap: 12px; }
+    .deliv-arrow {
+      font-size: 11px;
+      color: var(--fg-4);
+      transition: transform .35s cubic-bezier(0.4,0,0.2,1), color .2s;
+      display: inline-block;
+    }
+    .deliv-panel:hover .deliv-arrow {
+      transform: rotate(90deg);
+      color: #1a4a8a;
+    }
+    .deliv-files {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .45s cubic-bezier(0.4,0,0.2,1);
+    }
+    .deliv-panel:hover .deliv-files {
+      max-height: 400px;
+    }
+    .deliv-files .file-row:first-child {
+      border-top: 1px solid var(--rule);
+    }
+
+    /* Notification dot in topbar stays readable */
+    #view-workspace .tb-ndot { background: #1a4a8a; border-color: #0a0906; }
+
+    /* Badge */
+    #view-workspace .sb-badge { background: var(--cream); color: var(--ink); }
+
     /* RESPONSIVE */
     @media (max-width: 860px) {
       .login-brand { display: none; }
@@ -1261,7 +1479,7 @@
                   </div>
                   <div class="prog-track"><div class="prog-fill sky" style="width:65%;"></div></div>
                   <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--fg-3);">
-                    <span>65% complete</span><span>Due Apr 20</span>
+                    <span>65% complete</span>
                   </div>
                 </div>
               </div>
@@ -1282,54 +1500,97 @@
 
       <!-- ══ FILES ══ -->
       <div class="page" id="page-files">
-        <div class="sect">
-          <div class="ph">
+        <div class="sect" style="border-bottom:1px solid var(--rule);">
+          <div class="ph" style="margin-bottom:10px;">
             <div class="ph-eye">Your Build</div>
             <div class="ph-title">Deliverables</div>
           </div>
+          <div style="font-size:12px;color:var(--fg-3);font-weight:300;line-height:1.65;">
+            Your code will be available here for you to use as you please.
+          </div>
         </div>
-        <div class="panel" style="margin-bottom:16px;">
-          <div class="panel-head"><span class="panel-title">Design &amp; Brand</span><span class="chip chip-sky">3 files</span></div>
-          <div class="file-row"><div class="file-sq" style="font-size:6px;color:var(--cream);">●</div><div><div class="file-name">Brand_Guidelines_v3.pdf</div><div class="file-meta">4.2 MB · Delivered Apr 8, 2026</div></div><div class="file-dl">↓</div></div>
-          <div class="file-row"><div class="file-sq" style="font-size:6px;color:var(--cream);">●</div><div><div class="file-name">Logo_Package_Final.zip</div><div class="file-meta">18.6 MB · Delivered Apr 5, 2026</div></div><div class="file-dl">↓</div></div>
-          <div class="file-row"><div class="file-sq" style="font-size:6px;color:var(--cream);">●</div><div><div class="file-name">Homepage_Mockup_v2.fig</div><div class="file-meta">9.1 MB · Delivered Apr 3, 2026</div></div><div class="file-dl">↓</div></div>
-        </div>
-        <div class="panel" style="margin-bottom:16px;">
-          <div class="panel-head"><span class="panel-title">Documents</span><span class="chip chip-em">3 files</span></div>
-          <div class="file-row"><div class="file-sq" style="font-size:6px;color:var(--cream);">●</div><div><div class="file-name">Project_Scope_Agreement.pdf</div><div class="file-meta">1.1 MB · Mar 1, 2026</div></div><div class="file-dl">↓</div></div>
-          <div class="file-row"><div class="file-sq" style="font-size:6px;color:var(--cream);">●</div><div><div class="file-name">Content_Brief_v1.docx</div><div class="file-meta">0.8 MB · Mar 15, 2026</div></div><div class="file-dl">↓</div></div>
-          <div class="file-row"><div class="file-sq" style="font-size:6px;color:var(--cream);">●</div><div><div class="file-name">Analytics_Audit_Report.xlsx</div><div class="file-meta">2.3 MB · Mar 22, 2026</div></div><div class="file-dl">↓</div></div>
-        </div>
-        <div class="panel">
-          <div class="panel-head"><span class="panel-title">Media Assets</span><span class="chip chip-cream">2 files</span></div>
-          <div class="file-row"><div class="file-sq" style="font-size:6px;color:var(--cream);">●</div><div><div class="file-name">Photography_Selection.zip</div><div class="file-meta">47.2 MB · Apr 1, 2026</div></div><div class="file-dl">↓</div></div>
-          <div class="file-row"><div class="file-sq" style="font-size:6px;color:var(--cream);">●</div><div><div class="file-name">Hero_Animation_Draft.mp4</div><div class="file-meta">22.8 MB · Apr 7, 2026</div></div><div class="file-dl">↓</div></div>
+
+        <div style="padding:28px 40px;display:flex;flex-direction:column;gap:0;">
+
+          <!-- Design & Brand -->
+          <div class="deliv-panel">
+            <div class="deliv-head">
+              <div class="deliv-head-left">
+                <span class="panel-title">Design &amp; Brand</span>
+                <span class="chip chip-sky">3 files</span>
+              </div>
+              <span class="deliv-arrow">›</span>
+            </div>
+            <div class="deliv-files">
+              <div class="file-row"><div class="file-sq" style="font-size:6px;color:var(--cream);">●</div><div><div class="file-name">Brand_Guidelines_v3.pdf</div><div class="file-meta">4.2 MB · Delivered Apr 8, 2026</div></div><div class="file-dl">↓</div></div>
+              <div class="file-row"><div class="file-sq" style="font-size:6px;color:var(--cream);">●</div><div><div class="file-name">Logo_Package_Final.zip</div><div class="file-meta">18.6 MB · Delivered Apr 5, 2026</div></div><div class="file-dl">↓</div></div>
+              <div class="file-row" style="border-bottom:none;"><div class="file-sq" style="font-size:6px;color:var(--cream);">●</div><div><div class="file-name">Homepage_Mockup_v2.fig</div><div class="file-meta">9.1 MB · Delivered Apr 3, 2026</div></div><div class="file-dl">↓</div></div>
+            </div>
+          </div>
+
+          <!-- Documents -->
+          <div class="deliv-panel">
+            <div class="deliv-head">
+              <div class="deliv-head-left">
+                <span class="panel-title">Documents</span>
+                <span class="chip chip-em">3 files</span>
+              </div>
+              <span class="deliv-arrow">›</span>
+            </div>
+            <div class="deliv-files">
+              <div class="file-row"><div class="file-sq" style="font-size:6px;color:var(--cream);">●</div><div><div class="file-name">Project_Scope_Agreement.pdf</div><div class="file-meta">1.1 MB · Mar 1, 2026</div></div><div class="file-dl">↓</div></div>
+              <div class="file-row"><div class="file-sq" style="font-size:6px;color:var(--cream);">●</div><div><div class="file-name">Content_Brief_v1.docx</div><div class="file-meta">0.8 MB · Mar 15, 2026</div></div><div class="file-dl">↓</div></div>
+              <div class="file-row" style="border-bottom:none;"><div class="file-sq" style="font-size:6px;color:var(--cream);">●</div><div><div class="file-name">Analytics_Audit_Report.xlsx</div><div class="file-meta">2.3 MB · Mar 22, 2026</div></div><div class="file-dl">↓</div></div>
+            </div>
+          </div>
+
+          <!-- Media Assets -->
+          <div class="deliv-panel" style="margin-bottom:0;">
+            <div class="deliv-head">
+              <div class="deliv-head-left">
+                <span class="panel-title">Media Assets</span>
+                <span class="chip chip-cream">2 files</span>
+              </div>
+              <span class="deliv-arrow">›</span>
+            </div>
+            <div class="deliv-files">
+              <div class="file-row"><div class="file-sq" style="font-size:6px;color:var(--cream);">●</div><div><div class="file-name">Photography_Selection.zip</div><div class="file-meta">47.2 MB · Apr 1, 2026</div></div><div class="file-dl">↓</div></div>
+              <div class="file-row" style="border-bottom:none;"><div class="file-sq" style="font-size:6px;color:var(--cream);">●</div><div><div class="file-name">Hero_Animation_Draft.mp4</div><div class="file-meta">22.8 MB · Apr 7, 2026</div></div><div class="file-dl">↓</div></div>
+            </div>
+          </div>
+
         </div>
       </div>
 
       <!-- ══ INVOICES ══ -->
       <div class="page" id="page-invoices">
-        <div class="sect">
+        <!-- Header + stats -->
+        <div class="sect" style="border-bottom:none;padding-bottom:0;">
           <div class="ph">
             <div class="ph-eye">Billing</div>
             <div class="ph-title">Invoices</div>
           </div>
-          <div class="stat-strip" style="border:1px solid var(--rule);margin-bottom:22px;">
+          <div class="stat-strip" style="border:1px solid var(--rule);margin-top:8px;">
             <div class="stat-cell" style="background:none;">
               <div class="stat-eye">Paid to date</div>
-              <div class="stat-num" style="font-size:28px;">£0</div>
+              <div class="stat-num" style="font-size:36px;">£0</div>
             </div>
             <div class="stat-cell" style="background:none;">
               <div class="stat-eye">Amount due</div>
-              <div class="stat-num" style="font-size:28px;color:var(--ember);">£1,960</div>
+              <div class="stat-num" style="font-size:36px;color:var(--ember);">£1,960</div>
             </div>
             <div class="stat-cell" style="background:none;border-right:none;">
               <div class="stat-eye">Total contract value</div>
-              <div class="stat-num" style="font-size:28px;">£1,960</div>
+              <div class="stat-num" style="font-size:36px;">£1,960</div>
             </div>
           </div>
         </div>
-        <div class="panel">
+
+        <!-- Spacer -->
+        <div style="height:64px;"></div>
+
+        <!-- Invoice rows pushed to bottom -->
+        <div class="panel" style="margin:0 40px 40px;">
           <table class="inv-table">
             <thead><tr><th>Invoice</th><th>Description</th><th>Amount</th><th>Due</th><th>Status</th></tr></thead>
             <tbody>
@@ -1436,6 +1697,7 @@
 </div>
 
 <div id="toasts"></div>
+<div id="expand-overlay"></div>
 
 <script>
 /* ════════════════════════════════════════════════
@@ -1752,7 +2014,7 @@ function renderDashMS() {
     { st:'done', name:'Discovery & Strategy',    when:'Mar 1, 2026' },
     { st:'done', name:'Brand Identity',          when:'Mar 20, 2026' },
     { st:'done', name:'Content & Wireframes',    when:'Apr 1, 2026' },
-    { st:'now',  name:'Website Design',          when:'Due Apr 20' },
+    { st:'now',  name:'Website Design',          when:'' },
     { st:'next', name:'Development',             when:'May 1 – May 25' },
     { st:'next', name:'Launch',                  when:'Jun 1, 2026' },
   ];
@@ -2046,7 +2308,7 @@ function renderProjCards() {
     return;
   }
   el.innerHTML = projs.map((p, i) => `
-    <div class="proj-card" style="animation-delay:${0.65 + i * 0.1}s;" onclick="openProject('${p.name.replace(/'/g,"\\'")}')">
+    <div class="proj-card" style="animation-delay:${0.65 + i * 0.1}s;" onclick="expandToProject(event, '${p.name.replace(/'/g,"\\'")}')">
       <div class="proj-card-eye">Website Build</div>
       <div class="proj-card-name">${esc(p.name)}</div>
       <div style="display:flex;align-items:center;gap:10px;">
@@ -2056,6 +2318,43 @@ function renderProjCards() {
         <span class="proj-card-arrow">Open portal →</span>
       </div>
     </div>`).join('');
+}
+
+function expandToProject(event, name) {
+  const card   = event.currentTarget;
+  const rect   = card.getBoundingClientRect();
+  const ov     = document.getElementById('expand-overlay');
+  const main   = document.getElementById('main-area');
+  const mRect  = main.getBoundingClientRect();
+
+  // Snap overlay exactly onto the card with no transition
+  ov.style.transition = 'none';
+  ov.style.opacity    = '1';
+  ov.style.top        = rect.top    + 'px';
+  ov.style.left       = rect.left   + 'px';
+  ov.style.width      = rect.width  + 'px';
+  ov.style.height     = rect.height + 'px';
+
+  // Force reflow
+  void ov.offsetWidth;
+
+  // Expand to fill only the main content area (not the sidebar)
+  ov.classList.add('expanding');
+  ov.style.top    = mRect.top  + 'px';
+  ov.style.left   = mRect.left + 'px';
+  ov.style.width  = mRect.width  + 'px';
+  ov.style.height = mRect.height + 'px';
+
+  // Switch views at peak, then fade overlay away
+  setTimeout(() => {
+    openProject(name);
+    ov.style.transition = 'opacity 0.35s ease';
+    ov.style.opacity = '0';
+    setTimeout(() => {
+      ov.classList.remove('expanding');
+      ov.style.cssText = '';
+    }, 380);
+  }, 560);
 }
 
 function openProject(name) {
