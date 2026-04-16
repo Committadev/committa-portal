@@ -2066,10 +2066,11 @@ function buildLogo(targetHeight, animate) {
    CREDENTIALS — edit this array to manage access
 ════════════════════════════════════════════════ */
 let CREDS = [
-  { email:'admin@committa.com',    password:'Committa@2024', name:'Committa',      role:'Administrator' },
-  { email:'client@example.com',    password:'Client@2024',   name:'Acme Corp',     role:'Client' },
-  { email:'sarah@yourcompany.com', password:'Sarah@2024',    name:'Sarah Johnson', role:'Client' },
-  { email:'jasmin@tiliah.com',     password:'Tiliah011',     name:'Tilia Health',  role:'Client' },
+  { email:'admin@committa.com',        password:'Committa@2024', name:'Committa',        role:'Administrator' },
+  { email:'client@example.com',        password:'Client@2024',   name:'Acme Corp',       role:'Client' },
+  { email:'sarah@yourcompany.com',     password:'Sarah@2024',    name:'Sarah Johnson',   role:'Client' },
+  { email:'jasmin@tiliah.com',         password:'Tiliah011',     name:'Tilia Health',    role:'Client' },
+  { email:'lenka@levelupmailing.com',  password:'levelup012',    name:'Levelup Mailing', role:'Client' },
 ];
 
 /* ════════════════════════════════════════════════
@@ -2104,6 +2105,10 @@ let THREADS = {
   ],
   'Sarah Johnson': [
     { from:'committa', text:"Hi Sarah — your portal is live. You'll be able to see all progress, files, and invoices here as we build your site.", time:'Mar 5, 2026 · 9:00am' },
+  ],
+  'Levelup Mailing': [
+    { from:'committa', text:"Welcome to your Committa client portal, Levelup Mailing! This is your central hub for both projects — AI Generations and Email Agent. You'll find updates, deliverables, invoices, and direct messaging all in one place.", time:'Apr 1, 2026 · 10:00am' },
+    { from:'committa', text:"A quick note on AI Generations: we've completed and delivered the first 3 images. They're available in your Deliverables section. Let us know your thoughts so we can keep the momentum going.", time:'Apr 1, 2026 · 10:05am' },
   ],
 };
 
@@ -2499,13 +2504,19 @@ document.addEventListener('keydown', e => {
    PROJECTS
 ════════════════════════════════════════════════ */
 const PROJECTS = {
-  'Tilia Health':  [{ name:'Tilia Health Website',  type:'Website Creation', status:'In Progress' }],
-  'Acme Corp':     [{ name:'Acme Corp Website',     type:'Website Creation', status:'In Progress' }],
-  'Sarah Johnson': [{ name:'Sarah Johnson Website', type:'Website Creation', status:'In Progress' }],
+  'Tilia Health':  [{ name:'Tilia Health Website',  type:'Website Creation',    status:'In Progress' }],
+  'Acme Corp':     [{ name:'Acme Corp Website',     type:'Website Creation',    status:'In Progress' }],
+  'Sarah Johnson': [{ name:'Sarah Johnson Website', type:'Website Creation',    status:'In Progress' }],
+  'Levelup Mailing': [
+    { name:'AI Generations',  type:'AI Image Generation', status:'In Progress', eyebrow:'AI Project',    detail:'3 images delivered' },
+    { name:'Email Agent',     type:'Email Automation',    status:'In Progress', eyebrow:'Automation',    detail:'In development'      },
+  ],
   'Committa':      [
-    { name:'Tilia Health Website',  type:'Website Creation', status:'In Progress' },
-    { name:'Acme Corp Website',     type:'Website Creation', status:'In Progress' },
-    { name:'Sarah Johnson Website', type:'Website Creation', status:'In Progress' },
+    { name:'Tilia Health Website',  type:'Website Creation',    status:'In Progress' },
+    { name:'Acme Corp Website',     type:'Website Creation',    status:'In Progress' },
+    { name:'Sarah Johnson Website', type:'Website Creation',    status:'In Progress' },
+    { name:'AI Generations',        type:'AI Image Generation', status:'In Progress', eyebrow:'AI Project',  detail:'3 images delivered' },
+    { name:'Email Agent',           type:'Email Automation',    status:'In Progress', eyebrow:'Automation',  detail:'In development'     },
   ],
 };
 
@@ -2538,8 +2549,9 @@ function renderProjCards() {
   }
   el.innerHTML = projs.map((p, i) => `
     <div class="proj-card" style="animation-delay:${0.65 + i * 0.1}s;" onclick="expandToProject(event, '${p.name.replace(/'/g,"\\'")}')">
-      <div class="proj-card-eye">Website Build</div>
+      <div class="proj-card-eye">${esc(p.eyebrow || 'Website Build')}</div>
       <div class="proj-card-name">${esc(p.name)}</div>
+      ${p.detail ? `<div style="font-size:11px;color:var(--fg-3);margin-bottom:10px;font-weight:300;">${esc(p.detail)}</div>` : ''}
       <div style="display:flex;align-items:center;gap:10px;">
         <span class="proj-card-status">
           <span class="proj-card-status-dot"></span>${esc(p.status)}
