@@ -1,0 +1,2710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Committa — Client Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    /* ── TOKENS ── */
+    :root {
+      --ink:        #0a0906;
+      --ink-2:      #12100b;
+      --ink-3:      #1a1710;
+      --rule:       rgba(237,229,204,0.09);
+      --rule-hi:    rgba(237,229,204,0.16);
+      --fg:         #f0ece0;
+      --fg-2:       #9c9680;
+      --fg-3:       #5e5a4a;
+      --fg-4:       #3a3628;
+      --cream:      #ede5cc;
+      --cream-lo:   rgba(237,229,204,0.10);
+      --cream-rule: rgba(237,229,204,0.25);
+      --blue:       #5aacde;
+      --blue-lo:    rgba(90,172,222,0.12);
+      --emerald:    #4ade80;
+      --ember:      #fb923c;
+      --rose:       #f87171;
+      --sky:        #7dd3fc;
+      --sans:       'DM Sans', system-ui, sans-serif;
+      --serif:      'DM Serif Display', Georgia, serif;
+      --ease:       cubic-bezier(0.25,0.1,0.25,1);
+      --ease-out:   cubic-bezier(0,0,0.2,1);
+      --t:          0.2s;
+      --sidebar-w:  252px;
+      --msg-list-w: 210px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; background: var(--ink); color: var(--fg); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+
+    /* ── KEYFRAMES ── */
+    @keyframes rise  { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fade  { from { opacity:0; } to { opacity:1; } }
+    @keyframes left  { from { opacity:0; transform:translateX(-12px); } to { opacity:1; transform:translateX(0); } }
+    @keyframes right { from { opacity:0; transform:translateX(12px); } to { opacity:1; transform:translateX(0); } }
+    @keyframes prog  { from { width:0; } }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.3;} }
+    @keyframes popIn { 0%{transform:scale(.65);opacity:0;} 70%{transform:scale(1.1);} 100%{transform:scale(1);opacity:1;} }
+    @keyframes toastIn  { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+    @keyframes toastOut { from{opacity:1;} to{opacity:0;transform:translateY(6px);} }
+    @keyframes msgIn { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
+    @keyframes riseBlur { from { opacity:0; transform:translateY(22px); filter:blur(6px); } to { opacity:1; transform:translateY(0); filter:blur(0); } }
+    @keyframes expandRule { from { width:0; opacity:0; } to { width:40px; opacity:1; } }
+    @keyframes cardIn { from { opacity:0; transform:translateY(18px) scale(.98); } to { opacity:1; transform:translateY(0) scale(1); } }
+
+    /* ── PROJECT PICKER ANIMATIONS ── */
+    .proj-eyebrow-anim { animation: fade .7s cubic-bezier(0,0,0.2,1) .05s both; }
+    .proj-heading-anim { animation: riseBlur .75s cubic-bezier(0,0,0.2,1) .18s both; }
+    .proj-rule-anim    { animation: expandRule .6s cubic-bezier(0,0,0.2,1) .45s both; }
+    .proj-sub-anim     { animation: fade .6s cubic-bezier(0,0,0.2,1) .55s both; }
+
+    /* ── PROJECT CARD ── */
+    .proj-card {
+      padding: 24px 26px;
+      background: var(--ink-2);
+      border: 1px solid var(--rule-hi);
+      cursor: pointer;
+      transition: background .28s cubic-bezier(0,0,0.2,1),
+                  border-color .28s cubic-bezier(0,0,0.2,1),
+                  transform .28s cubic-bezier(0,0,0.2,1),
+                  box-shadow .28s cubic-bezier(0,0,0.2,1);
+      animation: cardIn .55s cubic-bezier(0,0,0.2,1) both;
+    }
+    .proj-card:hover {
+      background: var(--cream);
+      border-color: var(--cream);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.35);
+    }
+    .proj-card-eye {
+      font-size: 9px; font-weight: 600;
+      letter-spacing: .13em; text-transform: uppercase;
+      color: var(--cream); opacity: .65;
+      margin-bottom: 9px;
+      transition: color .28s, opacity .28s;
+    }
+    .proj-card:hover .proj-card-eye { color: var(--ink); opacity: .55; }
+    .proj-card-name {
+      font-family: var(--serif); font-size: 20px;
+      color: var(--fg); margin-bottom: 12px;
+      transition: color .28s;
+    }
+    .proj-card:hover .proj-card-name { color: var(--ink); }
+    .proj-card-status {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 10px; color: var(--emerald);
+      transition: color .28s;
+    }
+    .proj-card:hover .proj-card-status { color: rgba(0,0,0,0.45); }
+    .proj-card-status-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--emerald); display: inline-block;
+      animation: blink 2.2s ease infinite;
+      transition: background .28s;
+    }
+    .proj-card:hover .proj-card-status-dot { background: rgba(0,0,0,0.35); animation: none; }
+    .proj-card-arrow {
+      font-size: 10px; color: var(--fg-4); margin-left: auto;
+      transition: color .28s, transform .28s;
+    }
+    .proj-card:hover .proj-card-arrow { color: var(--ink); transform: translateX(4px); }
+    @media (prefers-reduced-motion:reduce) { *, *::before, *::after { animation-duration:.01ms !important; transition-duration:.01ms !important; } }
+
+    /* ── VIEWS ── */
+    .view { position:fixed; inset:0; display:flex; transition: opacity .28s var(--ease), transform .28s var(--ease); }
+    .view.hidden { opacity:0; pointer-events:none; transform:scale(.982); }
+
+    /* ══════════════════════════════════════
+       LOGIN — Centered single column
+       ══════════════════════════════════════ */
+    #view-login {
+      background: var(--ink);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-center {
+      width: min(360px, calc(100vw - 48px));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: rise .6s var(--ease-out) .1s both;
+    }
+
+    .login-logo-wrap {
+      margin-bottom: 28px;
+    }
+
+    .l-title {
+      font-family: var(--sans);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--fg-3);
+      margin-bottom: 36px;
+      text-align: center;
+    }
+
+    .login-form-block {
+      width: 100%;
+    }
+
+    .fld { margin-bottom: 16px; }
+    .fld label {
+      display: block;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--fg-3);
+      margin-bottom: 7px;
+    }
+    .fld input {
+      width: 100%;
+      height: 44px;
+      padding: 0 14px;
+      background: var(--ink-2);
+      border: 1px solid var(--rule-hi);
+      border-radius: 2px;
+      color: var(--fg);
+      font-family: var(--sans);
+      font-size: 14px;
+      outline: none;
+      transition: border-color var(--t) var(--ease), box-shadow var(--t) var(--ease);
+    }
+    .fld input:focus {
+      border-color: var(--cream);
+      background: var(--cream);
+      color: #0c0c0e;
+      box-shadow: 0 0 0 3px var(--cream-lo);
+    }
+    .fld input::placeholder { color: var(--fg-4); }
+    .fld input:focus::placeholder { color: rgba(12,12,14,0.35); }
+
+    .l-err { font-size: 12px; color: var(--rose); min-height: 16px; margin-bottom: 12px; }
+    .l-err:empty { display:none; }
+
+    .btn-login {
+      width: 100%;
+      height: 44px;
+      background: var(--cream);
+      border: none;
+      border-radius: 2px;
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .07em;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      transition: opacity var(--t) var(--ease), transform var(--t) var(--ease);
+    }
+    .btn-login:hover { opacity: .88; transform: translateY(-1px); }
+    .btn-login:active { opacity: .75; transform: none; }
+    .btn-login:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+    .btn-arrow { transition: transform var(--t) var(--ease); }
+    .btn-login:hover .btn-arrow { transform: translateX(3px); }
+    .l-help { margin-top: 18px; font-size: 11px; color: var(--fg-4); text-align: center; }
+
+    /* ══════════════════════════════════════
+       APP SHELL
+       ══════════════════════════════════════ */
+    #view-app { overflow: hidden; }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      height: 100%;
+      background: var(--ink-2);
+      border-right: 1px solid var(--rule);
+      display: flex;
+      flex-direction: column;
+      animation: left .4s var(--ease-out) both;
+    }
+
+    .sb-top {
+      padding: 20px 18px 18px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .sb-logo-wrap { margin-bottom: 16px; }
+    .sb-logo-wrap svg { height: 20px; width: auto; display: block; }
+
+    .sb-client-chip {
+      padding: 9px 12px;
+      background: var(--cream-lo);
+      border-left: 2px solid rgba(237,229,204,0.4);
+    }
+    .sb-chip-label {
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+      color: var(--fg-4);
+      margin-bottom: 3px;
+    }
+    .sb-chip-name { font-size: 13px; font-weight: 500; color: var(--fg); }
+    .sb-chip-status {
+      display: flex; align-items: center; gap: 5px;
+      margin-top: 5px;
+      font-size: 10px;
+      color: var(--emerald);
+    }
+    .sb-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--emerald);
+      animation: blink 2.2s ease infinite;
+    }
+
+    .sb-nav { flex: 1; padding: 6px 0; overflow-y: auto; }
+    .sb-nav::-webkit-scrollbar { width: 0; }
+
+    .sb-sec {
+      padding: 14px 18px 4px;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+      color: var(--fg-4);
+    }
+    .sb-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 18px;
+      font-size: 13px;
+      color: var(--fg-2);
+      cursor: pointer;
+      border-left: 2px solid transparent;
+      transition: color var(--t) var(--ease), background var(--t) var(--ease), border-color var(--t) var(--ease);
+      user-select: none;
+    }
+    .sb-item:hover { color: var(--fg); background: rgba(255,255,255,0.025); }
+    .sb-item.active { color: var(--cream); border-left-color: var(--cream); background: var(--cream-lo); }
+    .sb-icon { width: 15px; flex-shrink: 0; opacity: .6; color: inherit; }
+    .sb-item.active .sb-icon { opacity: 1; }
+    .sb-badge {
+      margin-left: auto;
+      min-width: 16px; height: 16px;
+      padding: 0 4px;
+      background: var(--cream);
+      border-radius: 8px;
+      font-size: 9px; font-weight: 700;
+      color: var(--ink);
+      display: flex; align-items: center; justify-content: center;
+      animation: popIn .3s var(--ease) both;
+    }
+
+    .sb-footer {
+      border-top: 1px solid var(--rule);
+      padding: 13px 18px;
+    }
+    .sb-user { display: flex; align-items: center; gap: 9px; }
+    .sb-avatar {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4f46e5, #c8a96e);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 600; color: #fff;
+      flex-shrink: 0;
+    }
+    .sb-name { font-size: 12px; font-weight: 500; color: var(--fg); }
+    .sb-role { font-size: 10px; color: var(--fg-3); margin-top: 1px; }
+    .sb-logout {
+      margin-left: auto;
+      background: none; border: none;
+      color: var(--fg-4); cursor: pointer; padding: 4px;
+      border-radius: 2px;
+      transition: color var(--t), background var(--t);
+      display: flex; align-items: center;
+    }
+    .sb-logout:hover { color: var(--rose); background: rgba(248,113,113,.1); }
+
+    /* MAIN */
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+    .topbar {
+      height: 54px;
+      border-bottom: 1px solid var(--rule);
+      display: flex; align-items: center;
+      padding: 0 28px;
+      gap: 14px;
+      flex-shrink: 0;
+      background: rgba(9,9,13,.8);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .tb-title { font-size: 13px; font-weight: 500; color: var(--fg); }
+    .tb-sep { width: 1px; height: 13px; background: var(--rule-hi); }
+    .tb-path { font-size: 12px; color: var(--fg-3); }
+    .tb-right { margin-left: auto; display: flex; align-items: center; gap: 9px; }
+
+    .tb-icon {
+      width: 30px; height: 30px;
+      border: 1px solid var(--rule-hi);
+      border-radius: 2px;
+      background: none;
+      color: var(--fg-2);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      transition: border-color var(--t), color var(--t), background var(--t);
+    }
+    .tb-icon:hover { color: var(--fg); background: rgba(255,255,255,.04); }
+    .tb-ndot {
+      position: absolute; top: 5px; right: 5px;
+      width: 5px; height: 5px;
+      background: var(--cream);
+      border-radius: 50%;
+      border: 1.5px solid var(--ink);
+      animation: blink 2s ease infinite;
+    }
+    .tb-cta {
+      height: 30px; padding: 0 14px;
+      background: var(--cream);
+      border: none; border-radius: 2px;
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 11px; font-weight: 600;
+      letter-spacing: .04em;
+      cursor: pointer;
+      display: flex; align-items: center; gap: 6px;
+      transition: opacity var(--t), transform var(--t);
+    }
+    .tb-cta:hover { opacity: .88; transform: translateY(-1px); }
+
+    /* SCROLL */
+    .scroll { flex: 1; overflow-y: auto; scroll-behavior: smooth; }
+    .scroll::-webkit-scrollbar { width: 4px; }
+    .scroll::-webkit-scrollbar-track { background: transparent; }
+    .scroll::-webkit-scrollbar-thumb { background: var(--rule-hi); border-radius: 2px; }
+
+    /* PAGES */
+    .page { display: none; animation: rise .3s var(--ease-out) both; }
+    .page.active { display: block; }
+
+    /* GRID UTILS */
+    .g2 { display: grid; grid-template-columns: repeat(2,1fr); }
+    .g3 { display: grid; grid-template-columns: repeat(3,1fr); }
+    .g4 { display: grid; grid-template-columns: repeat(4,1fr); }
+
+    /* SECTION */
+    .sect { padding: 44px 40px; border-bottom: 1px solid var(--rule); }
+    .sect:last-child { border-bottom: none; }
+
+    /* PAGE HEADER */
+    .ph { margin-bottom: 24px; }
+    .ph-eye { font-size: 9px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--cream); opacity: .7; margin-bottom: 7px; }
+    .ph-title { font-family: var(--serif); font-size: 28px; color: var(--fg); line-height: 1.1; }
+
+    /* STAT STRIP */
+    .stat-strip { display: grid; grid-template-columns: repeat(4,1fr); border-bottom: 1px solid var(--rule); }
+    .stat-cell {
+      padding: 36px 32px;
+      border-right: 1px solid var(--rule);
+      transition: background var(--t) var(--ease);
+    }
+    .stat-cell:last-child { border-right: none; }
+    .stat-cell:hover { background: rgba(255,255,255,.02); }
+    .stat-eye { font-size: 9px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-3); margin-bottom: 10px; }
+    .stat-num { font-family: var(--serif); font-size: 42px; color: var(--fg); line-height: 1; margin-bottom: 8px; }
+    .stat-sub { font-size: 11px; color: var(--fg-3); display: flex; align-items: center; gap: 4px; }
+    .stat-up { color: var(--emerald); }
+    .stat-warn { color: var(--ember); }
+
+    /* PANEL */
+    .panel { background: var(--ink-2); }
+    .panel-head {
+      padding: 20px 28px;
+      border-bottom: 1px solid var(--rule);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .panel-title { font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--fg-3); }
+    .panel-act { font-size: 11px; color: var(--cream); background: none; border: none; cursor: pointer; transition: opacity var(--t); }
+    .panel-act:hover { opacity: .7; }
+    .panel-body { padding: 28px; }
+
+    /* PROGRESS */
+    .prog-row { margin-bottom: 16px; }
+    .prog-row:last-child { margin-bottom: 0; }
+    .prog-label { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+    .prog-name { font-size: 12px; color: var(--fg-2); }
+    .prog-pct { font-family: var(--serif); font-size: 16px; color: var(--fg); }
+    .prog-track { height: 2px; background: rgba(255,255,255,.06); }
+    .prog-fill { height: 100%; background: var(--cream); animation: prog 1.1s var(--ease-out) both; }
+    .prog-fill.em  { background: var(--emerald); }
+    .prog-fill.sky { background: var(--sky); }
+    .prog-fill.dim { background: var(--fg-4); }
+
+    /* FEED */
+    .feed-item {
+      display: flex; gap: 18px;
+      padding: 26px 28px;
+      border-bottom: 1px solid var(--rule);
+      transition: background var(--t) var(--ease);
+      animation: fade .3s var(--ease-out) both;
+    }
+    .feed-item:last-child { border-bottom: none; }
+    .feed-item:hover { background: rgba(255,255,255,.014); }
+
+    .feed-glyph {
+      width: 28px; height: 28px;
+      border: 1px solid var(--cream-rule);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px;
+      color: var(--cream);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .feed-body { flex: 1; }
+    .feed-row1 { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 5px; }
+    .feed-name { font-size: 13px; font-weight: 500; color: var(--fg); }
+    .feed-date { font-size: 10px; color: var(--fg-4); white-space: nowrap; letter-spacing: .04em; }
+    .feed-text { font-size: 12px; color: var(--fg-2); line-height: 1.65; font-weight: 300; margin-bottom: 8px; }
+
+    .chip {
+      display: inline-flex; align-items: center;
+      padding: 2px 7px;
+      border: 1px solid;
+      font-size: 9px; font-weight: 600;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+    }
+    .chip-cream { border-color: var(--cream-rule); color: var(--cream); }
+    .chip-em    { border-color: rgba(74,222,128,.25); color: var(--emerald); }
+    .chip-ember { border-color: rgba(251,146,60,.25); color: var(--ember); }
+    .chip-sky   { border-color: rgba(125,211,252,.25); color: var(--sky); }
+    .chip-new   { border-color: rgba(237,229,204,.4); color: #f5edcc; }
+
+    /* MILESTONES */
+    .ms-wrap { padding: 20px 22px; }
+    .ms-item { display: flex; gap: 14px; padding: 12px 0; position: relative; }
+    .ms-item:not(:last-child)::after {
+      content: ''; position: absolute;
+      left: 11px; top: 36px; bottom: 0;
+      width: 1px; background: var(--rule);
+    }
+    .ms-node {
+      width: 22px; height: 22px;
+      border: 1px solid var(--rule-hi);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; position: relative; z-index: 1;
+      background: var(--ink-2); font-size: 9px;
+    }
+    .ms-node.done { border-color: var(--emerald); color: var(--emerald); background: rgba(74,222,128,.08); }
+    .ms-node.now  { border-color: var(--cream); color: var(--cream); background: var(--cream-lo); }
+    .ms-node.next { border-color: var(--fg-4); color: var(--fg-4); }
+    .ms-name { font-size: 12px; font-weight: 500; color: var(--fg); margin-bottom: 2px; padding-top: 3px; }
+    .ms-when { font-size: 10px; color: var(--fg-3); }
+    .ms-when.now { color: var(--cream); }
+
+    /* FILES */
+    .file-row {
+      display: flex; align-items: center; gap: 14px;
+      padding: 18px 28px;
+      border-bottom: 1px solid var(--rule);
+      cursor: pointer;
+      transition: background var(--t) var(--ease);
+    }
+    .file-row:last-child { border-bottom: none; }
+    .file-row:hover { background: rgba(255,255,255,.02); }
+    .file-sq {
+      width: 28px; height: 28px;
+      border: 1px solid var(--rule-hi);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; flex-shrink: 0;
+    }
+    .file-name { font-size: 12px; font-weight: 500; color: var(--fg); }
+    .file-meta { font-size: 10px; color: var(--fg-3); margin-top: 2px; }
+    .file-dl { margin-left: auto; color: var(--fg-4); font-size: 13px; transition: color var(--t); }
+    .file-row:hover .file-dl { color: var(--cream); }
+
+    /* INVOICES */
+    .inv-table { width: 100%; border-collapse: collapse; }
+    .inv-table th {
+      text-align: left; padding: 0 28px 14px;
+      font-size: 9px; font-weight: 600;
+      letter-spacing: .1em; text-transform: uppercase; color: var(--fg-3);
+      border-bottom: 1px solid var(--rule);
+    }
+    .inv-table td {
+      padding: 18px 28px; font-size: 12px; color: var(--fg-2);
+      border-bottom: 1px solid var(--rule); vertical-align: middle;
+    }
+    .inv-table tr:last-child td { border-bottom: none; }
+    .inv-table tr:hover td { background: rgba(255,255,255,.014); }
+    .inv-num { font-family: var(--serif); font-size: 15px; color: var(--fg); }
+    .status-sq { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 600; letter-spacing: .06em; }
+    .status-sq::before { content: ''; width: 5px; height: 5px; border-radius: 1px; }
+    .s-paid  { color: var(--emerald); }
+    .s-paid::before  { background: var(--emerald); }
+    .s-due   { color: var(--ember); }
+    .s-due::before   { background: var(--ember); }
+    .s-sched { color: var(--fg-3); }
+    .s-sched::before { background: var(--fg-3); }
+
+    /* ALERT STRIP */
+    .alert-strip {
+      padding: 13px 22px;
+      border-top: 1px solid rgba(251,146,60,.25);
+      background: rgba(251,146,60,.05);
+      display: flex; gap: 10px; align-items: flex-start;
+      font-size: 12px;
+    }
+    .alert-strip strong { color: var(--ember); }
+    .alert-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+    .alert-body { color: var(--fg-2); line-height: 1.55; }
+
+    /* ══════════════════════════════════════
+       MESSAGES / CHAT
+       ══════════════════════════════════════ */
+    .msg-shell {
+      display: flex;
+      height: 100%;
+      overflow: hidden;
+    }
+    /* Left: conversation list */
+    .msg-list {
+      width: var(--msg-list-w);
+      flex-shrink: 0;
+      border-right: 1px solid var(--rule);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .msg-list::-webkit-scrollbar { width: 0; }
+    .msg-list-head {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--rule);
+      font-size: 9px; font-weight: 600;
+      letter-spacing: .12em; text-transform: uppercase;
+      color: var(--fg-3);
+      flex-shrink: 0;
+    }
+    .msg-convo {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--rule);
+      cursor: pointer;
+      transition: background var(--t) var(--ease);
+    }
+    .msg-convo:hover { background: rgba(255,255,255,.025); }
+    .msg-convo.active { background: var(--cream-lo); border-left: 2px solid var(--cream); }
+    .mc-name { font-size: 12px; font-weight: 500; color: var(--fg); margin-bottom: 3px; display: flex; align-items: center; gap: 6px; }
+    .mc-preview { font-size: 11px; color: var(--fg-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 300; }
+    .mc-unread {
+      width: 14px; height: 14px;
+      background: var(--cream);
+      border-radius: 7px;
+      font-size: 8px; font-weight: 700;
+      color: var(--ink);
+      display: flex; align-items: center; justify-content: center;
+      margin-left: auto;
+    }
+
+    /* Right: thread */
+    .msg-thread {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .msg-thread-head {
+      padding: 13px 20px;
+      border-bottom: 1px solid var(--rule);
+      display: flex; align-items: center; gap: 10px;
+      flex-shrink: 0;
+      background: var(--ink-2);
+    }
+    .mth-avatar {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), var(--cream));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 9px; font-weight: 600; color: var(--ink);
+      flex-shrink: 0;
+    }
+    .mth-name { font-size: 12px; font-weight: 600; color: var(--fg); }
+    .mth-sub { font-size: 10px; color: var(--fg-3); }
+    .mth-status { margin-left: auto; display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--emerald); }
+
+    .msg-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .msg-scroll::-webkit-scrollbar { width: 4px; }
+    .msg-scroll::-webkit-scrollbar-thumb { background: var(--rule-hi); }
+
+    .msg-date-sep {
+      text-align: center;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+      color: var(--fg-4);
+      margin: 14px 0 8px;
+    }
+
+    .msg-bubble {
+      max-width: 72%;
+      margin-bottom: 10px;
+      animation: msgIn .25s var(--ease-out) both;
+    }
+    .msg-bubble.committa { align-self: flex-end; text-align: right; }
+    .msg-bubble.client   { align-self: flex-start; }
+
+    .bubble-sender {
+      font-size: 9px; font-weight: 600;
+      letter-spacing: .08em; text-transform: uppercase;
+      color: var(--fg-4);
+      margin-bottom: 4px;
+    }
+    .bubble-committa .bubble-sender { color: var(--cream); opacity: .7; }
+
+    .bubble-body {
+      padding: 10px 14px;
+      font-size: 12px;
+      line-height: 1.62;
+      color: var(--fg);
+      font-weight: 300;
+      border: 1px solid var(--rule-hi);
+    }
+    .bubble-committa .bubble-body {
+      background: var(--cream-lo);
+      border-color: var(--cream-rule);
+    }
+    .bubble-client .bubble-body {
+      background: rgba(255,255,255,.04);
+      border-color: var(--rule-hi);
+    }
+    .bubble-meta {
+      margin-top: 4px;
+      font-size: 9px;
+      color: var(--fg-4);
+    }
+
+    .msg-input-bar {
+      border-top: 1px solid var(--rule);
+      padding: 14px 20px;
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+      background: var(--ink-2);
+      flex-shrink: 0;
+    }
+    .msg-input {
+      flex: 1;
+      background: var(--ink);
+      border: 1px solid var(--rule-hi);
+      border-radius: 2px;
+      padding: 9px 12px;
+      color: var(--fg);
+      font-family: var(--sans);
+      font-size: 12px;
+      resize: none;
+      outline: none;
+      min-height: 38px;
+      max-height: 96px;
+      line-height: 1.5;
+      transition: border-color var(--t), box-shadow var(--t);
+    }
+    .msg-input:focus { border-color: var(--cream); box-shadow: 0 0 0 2px var(--cream-lo); }
+    .msg-input::placeholder { color: var(--fg-4); }
+    .msg-send {
+      height: 38px; padding: 0 16px;
+      background: var(--cream);
+      border: none; border-radius: 2px;
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 11px; font-weight: 600;
+      cursor: pointer;
+      transition: opacity var(--t);
+      white-space: nowrap;
+    }
+    .msg-send:hover { opacity: .88; }
+
+    /* ══════════════════════════════════════
+       SETTINGS
+       ══════════════════════════════════════ */
+    .srow {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255,255,255,.04);
+    }
+    .srow:last-child { border-bottom: none; }
+    .srow-label { font-size: 12px; font-weight: 500; color: var(--fg); }
+    .srow-sub { font-size: 10px; color: var(--fg-3); margin-top: 2px; }
+    .toggle {
+      width: 34px; height: 18px;
+      background: var(--rule-hi);
+      border-radius: 9px;
+      cursor: pointer; border: none;
+      position: relative; flex-shrink: 0;
+      transition: background var(--t);
+    }
+    .toggle.on { background: var(--cream); }
+    .toggle::after {
+      content: ''; position: absolute;
+      top: 2px; left: 2px;
+      width: 14px; height: 14px;
+      border-radius: 50%; background: #fff;
+      transition: transform var(--t);
+    }
+    .toggle.on::after { transform: translateX(16px); }
+
+    .cred-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,.04);
+    }
+    .cred-row:last-child { border-bottom: none; }
+    .cred-email { font-size: 12px; font-weight: 500; color: var(--fg); flex: 1; }
+    .cred-role { font-size: 10px; color: var(--fg-3); }
+    .cred-del {
+      background: none; border: none;
+      color: var(--fg-4); cursor: pointer; font-size: 11px;
+      padding: 3px 5px; border-radius: 2px;
+      transition: color var(--t), background var(--t);
+    }
+    .cred-del:hover { color: var(--rose); background: rgba(248,113,113,.1); }
+
+    /* MODAL */
+    .backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.65);
+      backdrop-filter: blur(7px);
+      -webkit-backdrop-filter: blur(7px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 100; padding: 24px;
+      animation: fade .2s var(--ease) both;
+    }
+    .backdrop.hidden { display: none; }
+    .modal {
+      width: min(500px,100%);
+      background: var(--ink-2);
+      border: 1px solid var(--rule-hi);
+      animation: rise .28s var(--ease-out) both;
+    }
+    .modal-head { padding: 22px 26px 18px; border-bottom: 1px solid var(--rule); }
+    .modal-title { font-family: var(--serif); font-size: 20px; color: var(--fg); }
+    .modal-sub { font-size: 12px; color: var(--fg-3); margin-top: 3px; font-weight: 300; }
+    .modal-body { padding: 20px 26px; }
+    .mf { margin-bottom: 14px; }
+    .mf label {
+      display: block; font-size: 9px; font-weight: 600;
+      letter-spacing: .1em; text-transform: uppercase;
+      color: var(--fg-3); margin-bottom: 6px;
+    }
+    .mf input, .mf select, .mf textarea {
+      width: 100%; padding: 9px 12px;
+      background: var(--ink); border: 1px solid var(--rule-hi);
+      border-radius: 0; color: var(--fg);
+      font-family: var(--sans); font-size: 12px;
+      outline: none;
+      transition: border-color var(--t), box-shadow var(--t);
+    }
+    .mf textarea { resize: vertical; min-height: 80px; }
+    .mf input:focus, .mf select:focus, .mf textarea:focus {
+      border-color: var(--cream); box-shadow: 0 0 0 2px var(--cream-lo);
+    }
+    .mf select option { background: var(--ink-2); }
+    .modal-foot { padding: 14px 26px 22px; display: flex; gap: 8px; justify-content: flex-end; }
+    .btn-ghost {
+      height: 34px; padding: 0 16px;
+      background: none; border: 1px solid var(--rule-hi);
+      color: var(--fg-2); font-family: var(--sans); font-size: 11px;
+      cursor: pointer; border-radius: 0;
+      transition: color var(--t), border-color var(--t);
+    }
+    .btn-ghost:hover { color: var(--fg); border-color: var(--fg-3); }
+    .btn-act {
+      height: 34px; padding: 0 20px;
+      background: var(--cream); border: none;
+      color: var(--ink); font-family: var(--sans);
+      font-size: 11px; font-weight: 600;
+      cursor: pointer; border-radius: 0;
+      transition: opacity var(--t);
+    }
+    .btn-act:hover { opacity: .88; }
+
+    /* TOAST */
+    #toasts { position: fixed; bottom: 20px; right: 20px; z-index: 200; display: flex; flex-direction: column; gap: 7px; }
+    .toast {
+      padding: 11px 16px;
+      background: var(--ink-2);
+      border: 1px solid var(--rule-hi);
+      border-left: 2px solid var(--cream);
+      font-size: 12px; color: var(--fg);
+      max-width: 280px;
+      animation: toastIn .22s var(--ease-out) both;
+    }
+    .toast.out { animation: toastOut .22s var(--ease) both forwards; }
+    .toast-t { font-weight: 500; margin-bottom: 2px; }
+    .toast-b { color: var(--fg-2); font-size: 11px; }
+
+    /* EMPTY */
+    .empty { padding: 40px 20px; text-align: center; color: var(--fg-3); font-size: 12px; }
+
+    /* ── CARD EXPAND TRANSITION ── */
+    #expand-overlay {
+      position: fixed;
+      z-index: 999;
+      background: #ede5cc;
+      border: 1px solid rgba(42,28,8,0.18);
+      pointer-events: none;
+      opacity: 0;
+    }
+    #expand-overlay.expanding {
+      opacity: 1;
+      border-color: transparent;
+      transition:
+        top    0.6s cubic-bezier(0.77,0,0.18,1),
+        left   0.6s cubic-bezier(0.77,0,0.18,1),
+        width  0.6s cubic-bezier(0.77,0,0.18,1),
+        height 0.6s cubic-bezier(0.77,0,0.18,1),
+        border-color 0.1s ease;
+    }
+
+    /* ══════════════════════════════════════
+       WORKSPACE LIGHT THEME
+       Main content area only — sidebar stays dark
+       ══════════════════════════════════════ */
+    #view-workspace {
+      --ink:        #ede5cc;
+      --ink-2:      #e2d8b0;
+      --ink-3:      #d6ca98;
+      --rule:       rgba(42,28,8,0.11);
+      --rule-hi:    rgba(42,28,8,0.20);
+      --fg:         #1c1208;
+      --fg-2:       #4a3a20;
+      --fg-3:       #6e5830;
+      --fg-4:       #9a8055;
+      --cream:      #1c1208;
+      --cream-lo:   rgba(28,18,8,0.07);
+      --cream-rule: rgba(28,18,8,0.22);
+      background: var(--ink);
+      color: var(--fg);
+    }
+
+    /* Topbar */
+    /* Topbar stays dark */
+    #view-workspace .topbar {
+      background: rgba(9,9,13,0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom-color: rgba(237,229,204,0.09);
+    }
+    #view-workspace .tb-title,
+    #view-workspace .tb-path { color: #f0ece0; }
+    #view-workspace .tb-sep  { background: rgba(237,229,204,0.16); }
+    #view-workspace .tb-icon {
+      border-color: rgba(237,229,204,0.16);
+      color: #9c9680;
+    }
+    #view-workspace .tb-icon:hover {
+      background: rgba(255,255,255,0.04);
+      color: #f0ece0;
+    }
+
+    /* Hover states on light bg */
+    #view-workspace .feed-item:hover { background: rgba(0,0,0,0.04); }
+    #view-workspace .stat-cell:hover  { background: rgba(0,0,0,0.03); }
+    #view-workspace .file-row:hover   { background: rgba(0,0,0,0.04); }
+    #view-workspace .inv-table tr:hover td { background: rgba(0,0,0,0.03); }
+    #view-workspace .msg-convo:hover  { background: rgba(0,0,0,0.05); }
+    #view-workspace .msg-convo.active { background: rgba(0,0,0,0.08); border-left-color: var(--cream); }
+
+    /* Panels — transparent fill, thin dark outline */
+    #view-workspace .panel {
+      background: transparent;
+      border: 1px solid rgba(28,18,8,0.18);
+    }
+    #view-workspace .panel-head {
+      border-bottom-color: rgba(28,18,8,0.12);
+    }
+    #view-workspace .stat-strip {
+      border-color: rgba(28,18,8,0.12);
+    }
+    #view-workspace .stat-cell {
+      border-right-color: rgba(28,18,8,0.12);
+    }
+
+    /* Message chat area */
+    #view-workspace .msg-thread-head,
+    #view-workspace .msg-input-bar { background: rgba(237,229,204,0.6); }
+    #view-workspace .msg-input {
+      background: var(--ink);
+      border-color: rgba(42,28,8,0.20);
+      color: var(--fg);
+    }
+    #view-workspace .msg-input::placeholder { color: var(--fg-4); }
+    #view-workspace .msg-input:focus {
+      border-color: var(--cream);
+      box-shadow: 0 0 0 2px rgba(28,18,8,0.10);
+    }
+    #view-workspace .bubble-committa .bubble-body {
+      background: rgba(0,0,0,0.07);
+      border-color: rgba(0,0,0,0.18);
+    }
+    #view-workspace .bubble-client .bubble-body {
+      background: rgba(255,255,255,0.55);
+      border-color: rgba(0,0,0,0.12);
+    }
+    #view-workspace .msg-send {
+      background: var(--cream);
+      color: var(--ink);
+    }
+
+    /* Progress fills stay visible on light bg */
+    #view-workspace .prog-track { background: rgba(0,0,0,0.10); }
+
+    /* Scrollbar on light bg */
+    #view-workspace .scroll::-webkit-scrollbar-thumb { background: rgba(42,28,8,0.20); }
+
+    /* Alert strip */
+    #view-workspace .alert-strip {
+      background: rgba(251,146,60,0.08);
+      border-top-color: rgba(251,146,60,0.35);
+    }
+
+    /* Dashboard project title header */
+    #view-workspace #dash-project-type { color: var(--fg); }
+
+    /* ── COLOUR REPLACEMENTS ON BEIGE ──
+       Swap pale/light tones for dark blue or near-black.
+       Green (emerald) kept for ticks + active indicators.
+    ── */
+
+    /* All accent colours → dark navy (inline vars picked up automatically) */
+    #view-workspace { --sky: #1a4a8a; --blue: #1a4a8a; --ember: #1a4a8a; }
+
+    /* Chips */
+    #view-workspace .chip-sky   { border-color: rgba(26,74,138,.30); color: #1a4a8a; }
+    #view-workspace .chip-ember { border-color: rgba(28,18,8,.22);   color: var(--fg-2); }
+    #view-workspace .chip-cream { border-color: rgba(28,18,8,.22);   color: var(--fg-2); }
+    #view-workspace .chip-new   { border-color: rgba(28,18,8,.22);   color: var(--fg-2); }
+
+    /* Page eyebrow labels */
+    #view-workspace .ph-eye   { color: var(--fg-3); opacity: 1; }
+    #view-workspace .panel-title { color: var(--fg-3); }
+    #view-workspace .panel-act   { color: #1a4a8a; }
+    #view-workspace .panel-act:hover { opacity: .7; }
+
+    /* Feed glyphs */
+    #view-workspace .feed-glyph { border-color: rgba(28,18,8,.18); color: var(--fg-2); }
+
+    /* Stat strip */
+    #view-workspace .stat-warn { color: #1a4a8a; }
+    #view-workspace .stat-up   { color: var(--emerald); } /* keep green */
+
+    /* Invoice status */
+    #view-workspace .s-due  { color: #1a4a8a; }
+    #view-workspace .s-due::before  { background: #1a4a8a; }
+    #view-workspace .s-sched { color: var(--fg-3); }
+    #view-workspace .s-sched::before { background: var(--fg-3); }
+
+    /* Milestone nodes */
+    #view-workspace .ms-node.now  { border-color: #1a4a8a; color: #1a4a8a; background: rgba(26,74,138,.07); }
+    #view-workspace .ms-node.next { border-color: rgba(28,18,8,.25); color: var(--fg-3); }
+    #view-workspace .ms-when.now  { color: #1a4a8a; }
+
+    /* Progress bars — all dark navy */
+    #view-workspace .prog-fill      { background: #1a4a8a; }
+    #view-workspace .prog-fill.sky  { background: #1a4a8a; }
+    #view-workspace .prog-fill.dim  { background: #1a4a8a; }
+    #view-workspace .prog-fill.em   { background: #1a4a8a; }
+
+    /* File download arrow */
+    #view-workspace .file-dl { color: var(--fg-3); }
+    #view-workspace .file-row:hover .file-dl { color: #1a4a8a; }
+
+    /* ── DELIVERABLES ACCORDION ── */
+    .deliv-panel {
+      margin-bottom: 12px;
+      border: 1px solid rgba(28,18,8,0.18);
+      overflow: hidden;
+      transition: box-shadow .25s var(--ease);
+    }
+    .deliv-panel:hover {
+      box-shadow: 0 4px 18px rgba(28,18,8,0.08);
+    }
+    .deliv-head {
+      padding: 18px 28px;
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: default;
+      user-select: none;
+    }
+    .deliv-head-left { display: flex; align-items: center; gap: 12px; }
+    .deliv-arrow {
+      font-size: 11px;
+      color: var(--fg-4);
+      transition: transform .35s cubic-bezier(0.4,0,0.2,1), color .2s;
+      display: inline-block;
+    }
+    .deliv-panel:hover .deliv-arrow {
+      transform: rotate(90deg);
+      color: #1a4a8a;
+    }
+    .deliv-files {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .45s cubic-bezier(0.4,0,0.2,1);
+    }
+    .deliv-panel:hover .deliv-files {
+      max-height: 400px;
+    }
+    .deliv-files .file-row:first-child {
+      border-top: 1px solid var(--rule);
+    }
+
+    /* Notification dot in topbar stays readable */
+    #view-workspace .tb-ndot { background: #1a4a8a; border-color: #0a0906; }
+
+    /* Badge */
+    #view-workspace .sb-badge { background: var(--cream); color: var(--ink); }
+
+    /* ══════════════════════════════════════
+       RESPONSIVE — TABLET (≤860px)
+       ══════════════════════════════════════ */
+    @media (max-width: 860px) {
+      .stat-strip { grid-template-columns: repeat(2,1fr); }
+      .g2, .g3, .g4 { grid-template-columns: 1fr; }
+    }
+
+    /* ══════════════════════════════════════
+       RESPONSIVE — MOBILE (≤600px)
+       ══════════════════════════════════════ */
+    @media (max-width: 600px) {
+      :root {
+        --sidebar-w: 0px;
+        --msg-list-w: 0px;
+      }
+
+      /* ══ GLOBAL LAYOUT ══ */
+      html, body { overflow: auto; }
+      .view { position: relative; min-height: 100dvh; }
+      #view-app { flex-direction: column; overflow: auto; }
+      .main { overflow: visible; }
+      .scroll { overflow: visible; height: auto; }
+
+      /* ══ LOGIN ══ */
+      .login-center { width: calc(100vw - 40px); }
+
+      /* ══ SIDEBARS — hidden on mobile ══ */
+      #sb-projects,
+      #sb-project-nav { display: none !important; }
+
+      /* ══ PROJECT PICKER ══ */
+      #view-projects { min-height: 100dvh; overflow: visible; }
+      #view-projects > div:last-child {
+        padding: 48px 20px 60px;
+        justify-content: flex-start;
+      }
+      #proj-welcome { font-size: 30px !important; }
+      #proj-cards { width: 100% !important; }
+      .proj-card { padding: 18px 20px; }
+      .proj-card-name { font-size: 17px; margin-bottom: 10px; }
+
+      /* ══ NEW PROJECT PAGE ══ */
+      #view-new-project { min-height: 100dvh; overflow: visible; }
+      #view-new-project > div:last-child { padding: 32px 20px; align-items: flex-start; }
+
+      /* ══ WORKSPACE SHELL ══ */
+      #view-workspace {
+        min-height: 100dvh;
+        overflow: visible;
+        display: flex !important;
+      }
+
+      /* ══ TOPBAR ══ */
+      .topbar { padding: 0 16px; height: 48px; position: sticky; top: 0; z-index: 10; }
+      .tb-right { display: none; }
+
+      /* ══ MOBILE BOTTOM NAV ══ */
+      #mobile-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0; left: 0; right: 0;
+        height: 56px;
+        background: var(--ink-2);
+        border-top: 1px solid var(--rule);
+        z-index: 50;
+        align-items: stretch;
+      }
+      .mob-nav-item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        font-size: 8px;
+        font-weight: 600;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        color: var(--fg-3);
+        cursor: pointer;
+        transition: color .2s;
+        -webkit-tap-highlight-color: transparent;
+        border: none;
+        background: none;
+        font-family: var(--sans);
+      }
+      .mob-nav-item svg { opacity: .55; transition: opacity .2s; }
+      .mob-nav-item.active { color: var(--cream); }
+      .mob-nav-item.active svg { opacity: 1; }
+
+      /* ══ PAGE BASE ══ */
+      .page { padding-bottom: 72px; }
+      #page-messages { padding-bottom: 0; }
+
+      /* ══ SECTION + PANEL SPACING ══ */
+      .sect { padding: 18px 16px; }
+      .panel-head { padding: 13px 16px; }
+      .panel-body { padding: 14px 16px; }
+
+      /* ══ PAGE HEADERS (ph) ══ */
+      .ph { margin-bottom: 16px; }
+      .ph-title { font-size: 22px; }
+
+      /* ══ OVERVIEW — project title header ══ */
+      #page-dashboard > div:first-child {
+        padding: 18px 16px 14px !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px;
+      }
+      #dash-project-type { font-size: 22px !important; }
+
+      /* ══ STAT STRIP ══ */
+      .stat-strip { grid-template-columns: repeat(2,1fr); }
+      .stat-cell { padding: 16px 14px; }
+      .stat-num { font-size: 26px !important; }
+      /* Kill inline font-size overrides on invoice stats */
+      #page-invoices .stat-num { font-size: 26px !important; }
+
+      /* ══ OVERVIEW — 2-col content grid → single column ══ */
+      #page-dashboard > div[style*="grid"] {
+        display: block !important;
+      }
+      #page-dashboard > div[style*="grid"] > div:first-child {
+        border-right: none !important;
+        border-bottom: 1px solid var(--rule);
+      }
+
+      /* ══ PROGRESS BARS ══ */
+      .prog-row { margin-bottom: 12px; }
+      .prog-name { font-size: 11px; }
+      .prog-pct { font-size: 13px; }
+
+      /* ══ FEED ITEMS ══ */
+      .feed-item { padding: 14px 16px; gap: 12px; }
+      .fi-title { font-size: 13px; }
+      .fi-body { font-size: 12px; }
+      .fi-cat { font-size: 8px; }
+
+      /* ══ MILESTONES — 2-col → 1 col ══ */
+      #page-milestones .sect > div[style*="grid"] {
+        display: block !important;
+      }
+      #page-milestones .sect > div[style*="grid"] > div:last-child {
+        margin-top: 16px;
+      }
+      .ms-item { padding: 10px 16px; gap: 10px; }
+      .ms-name { font-size: 12px; }
+
+      /* ══ DELIVERABLES ══ */
+      #page-files > div[style*="padding"] { padding: 12px 16px !important; }
+      .deliv-head { padding: 13px 16px; }
+      .deliv-panel { margin-bottom: 10px; }
+      .file-row { padding: 10px 16px; gap: 10px; }
+      .file-name { font-size: 12px; }
+      .file-meta { font-size: 10px; }
+
+      /* ══ DELIVERABLES accordion: hover → tap ══ */
+      .deliv-panel:focus-within .deliv-files,
+      .deliv-panel:active .deliv-files { max-height: 400px; }
+
+      /* ══ INVOICES ══ */
+      #page-invoices .sect { padding-bottom: 0 !important; }
+      #page-invoices > div[style*="height:64px"] { height: 24px !important; }
+      #page-invoices .panel { margin: 0 16px 24px !important; }
+      .inv-table thead { display: none; }
+      .inv-table tbody tr { display: block; padding: 12px 0; border-bottom: 1px solid var(--rule); }
+      .inv-table td {
+        display: flex; justify-content: space-between; align-items: baseline;
+        padding: 3px 16px; border: none; font-size: 12px;
+      }
+      .inv-table td::before {
+        content: attr(data-label);
+        font-size: 9px; font-weight: 600;
+        letter-spacing: .08em; text-transform: uppercase;
+        color: var(--fg-3); flex-shrink: 0; margin-right: 12px;
+      }
+      .alert-strip { padding: 12px 16px; font-size: 11px; }
+
+      /* ══ MESSAGES ══ */
+      #page-messages { height: calc(100dvh - 48px - 56px) !important; }
+      .msg-shell { flex-direction: column; height: 100%; }
+      .msg-list { display: none; }
+      .msg-thread { height: 100%; }
+      .msg-thread-head { padding: 12px 14px; }
+      .msg-input-bar { padding: 8px 12px; gap: 8px; }
+
+      /* ══ SETTINGS — 2-col → 1 col ══ */
+      #page-settings .sect > div[style*="grid"] {
+        display: block !important;
+      }
+      #page-settings .sect > div[style*="grid"] > div + div {
+        margin-top: 16px;
+      }
+      .srow { padding: 12px 0; gap: 10px; }
+      .srow-label { font-size: 12px; }
+      .srow-sub { font-size: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     LOGIN
+════════════════════════════════════════ -->
+<div class="view" id="view-login">
+  <div class="login-center">
+    <div class="login-logo-wrap" id="brand-logo-full"></div>
+    <div class="l-title">Client Portal</div>
+
+    <div class="login-form-block">
+      <form onsubmit="handleLogin(event)">
+        <div class="fld">
+          <label for="le">Email address</label>
+          <input id="le" type="email" autocomplete="email" placeholder="you@example.com" required />
+        </div>
+        <div class="fld">
+          <label for="lp">Password</label>
+          <input id="lp" type="password" autocomplete="current-password" placeholder="••••••••" required />
+        </div>
+        <div class="l-err" id="l-err"></div>
+        <button class="btn-login" type="submit" id="l-btn">
+          <span id="l-label">Sign in</span>
+          <span class="btn-arrow">→</span>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     APP
+════════════════════════════════════════ -->
+<div class="view hidden" id="view-app">
+
+  <!-- ── LAYER 1: PROJECT PICKER SIDEBAR ── -->
+  <aside class="sidebar" id="sb-projects" style="width:var(--sidebar-w);display:flex;">
+    <div class="sb-top">
+      <div class="sb-logo-wrap" id="sb-logo"></div>
+      <div class="sb-client-chip">
+        <div class="sb-chip-label">Logged in as</div>
+        <div class="sb-chip-name" id="sb-cname">—</div>
+        <div class="sb-chip-status"><span class="sb-dot"></span>Portal connected</div>
+      </div>
+    </div>
+
+    <nav class="sb-nav">
+      <div class="sb-sec">Your Projects</div>
+      <div id="proj-list"></div>
+
+      <div class="sb-sec" style="margin-top:8px;"></div>
+      <div class="sb-item" onclick="openNewProject()" id="new-proj-btn">
+        <svg class="sb-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+          <path d="M8 2v12M2 8h12"/>
+        </svg>
+        New Project
+      </div>
+    </nav>
+
+    <div class="sb-footer">
+      <div class="sb-user">
+        <div class="sb-avatar" id="sb-av">C</div>
+        <div>
+          <div class="sb-name" id="sb-uname">—</div>
+          <div class="sb-role" id="sb-role">—</div>
+        </div>
+        <button class="sb-logout" onclick="logout()" title="Sign out">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+            <path d="M6 2H2v12h4M11 5l3 3-3 3M14 8H7"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── LAYER 2: PROJECT NAV SIDEBAR ── -->
+  <aside class="sidebar" id="sb-project-nav" style="display:none;">
+    <div class="sb-top">
+      <div class="sb-logo-wrap" id="sb-logo-nav"></div>
+      <!-- Back to projects -->
+      <button onclick="backToProjects()" style="display:flex;align-items:center;gap:7px;background:none;border:none;color:var(--fg-3);font-family:var(--sans);font-size:11px;cursor:pointer;padding:8px 0 12px;transition:color var(--t);" onmouseover="this.style.color='var(--fg)'" onmouseout="this.style.color='var(--fg-3)'">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M10 3L5 8l5 5"/></svg>
+        All projects
+      </button>
+      <div style="padding:9px 12px;background:var(--cream-lo);border-left:2px solid rgba(237,229,204,0.4);">
+        <div style="font-size:9px;font-weight:500;letter-spacing:.11em;text-transform:uppercase;color:var(--fg-4);margin-bottom:3px;">Active project</div>
+        <div style="font-size:13px;font-weight:500;color:var(--fg);" id="sb-proj-name">—</div>
+      </div>
+    </div>
+
+    <nav class="sb-nav">
+      <div class="sb-sec">Workspace</div>
+      <div class="sb-item active" data-page="dashboard" onclick="nav(this)">
+        <svg class="sb-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+          <rect x="1" y="1" width="6" height="6"/><rect x="9" y="1" width="6" height="6"/>
+          <rect x="1" y="9" width="6" height="6"/><rect x="9" y="9" width="6" height="6"/>
+        </svg>
+        Overview
+      </div>
+
+      <div class="sb-sec">Communication</div>
+      <div class="sb-item" data-page="updates" onclick="nav(this)">
+        <svg class="sb-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+          <path d="M2 2h12v9H9l-1 2-1-2H2z"/>
+        </svg>
+        Updates
+        <span class="sb-badge" id="sb-badge" style="display:none;">0</span>
+      </div>
+      <div class="sb-item" data-page="messages" onclick="nav(this)">
+        <svg class="sb-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+          <path d="M14 3H2v7h3v2.5L8 10h6V3z"/>
+        </svg>
+        Messages
+        <span class="sb-badge" id="sb-msg-badge" style="display:none;">2</span>
+      </div>
+
+      <div class="sb-sec">Your Build</div>
+      <div class="sb-item" data-page="milestones" onclick="nav(this)">
+        <svg class="sb-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+          <circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/>
+        </svg>
+        Milestones
+      </div>
+      <div class="sb-item" data-page="files" onclick="nav(this)">
+        <svg class="sb-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+          <path d="M3 2h6l4 4v8H3z"/><path d="M9 2v4h4"/>
+        </svg>
+        Deliverables
+      </div>
+
+      <div class="sb-sec">Billing</div>
+      <div class="sb-item" data-page="invoices" onclick="nav(this)">
+        <svg class="sb-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+          <rect x="2" y="2" width="12" height="12"/><path d="M5 8h6M5 5h6M5 11h3"/>
+        </svg>
+        Invoices
+      </div>
+
+      <div class="sb-sec">Account</div>
+      <div class="sb-item" data-page="settings" onclick="nav(this)">
+        <svg class="sb-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+          <circle cx="8" cy="8" r="2.2"/>
+          <path d="M8 1.5v1.2M8 13.3v1.2M1.5 8h1.2M13.3 8h1.2M3.4 3.4l.85.85M11.75 11.75l.85.85M3.4 12.6l.85-.85M11.75 4.25l.85-.85"/>
+        </svg>
+        Settings
+      </div>
+    </nav>
+
+    <div class="sb-footer">
+      <div class="sb-user">
+        <div class="sb-avatar" id="sb-av-2">C</div>
+        <div>
+          <div class="sb-name" id="sb-uname-2">—</div>
+          <div class="sb-role" id="sb-role-2">—</div>
+        </div>
+        <button class="sb-logout" onclick="logout()" title="Sign out">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+            <path d="M6 2H2v12h4M11 5l3 3-3 3M14 8H7"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main" id="main-area">
+
+    <!-- ── PROJECT PICKER MAIN ── -->
+    <div id="view-projects" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+      <div class="topbar">
+        <span class="tb-title">Committa</span>
+        <span class="tb-sep"></span>
+        <span class="tb-path">Projects</span>
+      </div>
+      <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:56px 48px;text-align:center;">
+        <div class="proj-eyebrow-anim" style="font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--cream);opacity:.55;margin-bottom:20px;" id="proj-eyebrow">Client Portal</div>
+        <div class="proj-heading-anim" style="font-family:var(--serif);font-size:clamp(42px,6vw,72px);color:var(--cream);line-height:1.05;margin-bottom:18px;letter-spacing:-.01em;" id="proj-welcome">Portal</div>
+        <div class="proj-rule-anim" style="width:40px;height:1px;background:var(--cream-rule);margin:0 auto 20px;"></div>
+        <div class="proj-sub-anim" style="font-size:13px;color:var(--fg-3);font-weight:300;margin-bottom:52px;letter-spacing:.02em;">Select a project below to open your workspace.</div>
+        <div id="proj-cards" style="display:flex;flex-direction:column;gap:12px;width:min(440px,100%);text-align:left;"></div>
+      </div>
+    </div>
+
+    <!-- ── NEW PROJECT MAIN ── -->
+    <div id="view-new-project" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
+      <div class="topbar">
+        <button onclick="backToProjects()" style="display:flex;align-items:center;gap:6px;background:none;border:none;color:var(--fg-3);font-family:var(--sans);font-size:12px;cursor:pointer;transition:color var(--t);" onmouseover="this.style.color='var(--fg)'" onmouseout="this.style.color='var(--fg-3)'">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M10 3L5 8l5 5"/></svg>
+          Back
+        </button>
+        <span class="tb-sep"></span>
+        <span class="tb-path">New Project</span>
+      </div>
+      <div style="flex:1;overflow-y:auto;display:flex;align-items:center;justify-content:center;padding:48px;">
+        <div style="width:min(520px,100%);animation:rise .4s var(--ease-out) both;" id="new-proj-form-wrap">
+          <div style="font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--cream);opacity:.7;margin-bottom:10px;">Start something new</div>
+          <div style="font-family:var(--serif);font-size:28px;color:var(--fg);margin-bottom:6px;">What do you want to build?</div>
+          <div style="font-size:13px;color:var(--fg-3);font-weight:300;margin-bottom:32px;">Tell us what you have in mind and we'll get back to you shortly.</div>
+          <textarea id="new-proj-input" placeholder="e.g. A website for my wellness clinic that showcases services and lets clients book appointments…" style="width:100%;min-height:140px;padding:16px 18px;background:var(--ink-2);border:1px solid var(--rule-hi);color:var(--fg);font-family:var(--sans);font-size:14px;font-weight:300;line-height:1.65;resize:none;outline:none;transition:border-color var(--t),box-shadow var(--t);border-radius:0;" onfocus="this.style.borderColor='var(--cream)';this.style.boxShadow='0 0 0 3px var(--cream-lo)'" onblur="this.style.borderColor='';this.style.boxShadow=''"></textarea>
+          <div style="margin-top:14px;display:flex;justify-content:flex-end;">
+            <button onclick="submitNewProject()" style="height:42px;padding:0 28px;background:var(--cream);border:none;color:var(--ink);font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.06em;cursor:pointer;transition:opacity var(--t),transform var(--t);" onmouseover="this.style.opacity='.88';this.style.transform='translateY(-1px)'" onmouseout="this.style.opacity='1';this.style.transform=''">
+              Send to Committa →
+            </button>
+          </div>
+        </div>
+        <!-- Confirmation (hidden until sent) -->
+        <div id="new-proj-confirm" style="display:none;width:min(520px,100%);text-align:center;animation:rise .5s var(--ease-out) both;">
+          <div style="font-size:32px;margin-bottom:20px;">✦</div>
+          <div style="font-family:var(--serif);font-size:26px;color:var(--fg);margin-bottom:12px;">Committa has been notified.</div>
+          <div style="font-size:14px;color:var(--fg-3);font-weight:300;line-height:1.7;">We will be in touch soon.</div>
+          <button onclick="backToProjects()" style="margin-top:32px;height:38px;padding:0 24px;background:none;border:1px solid var(--rule-hi);color:var(--fg-2);font-family:var(--sans);font-size:12px;cursor:pointer;transition:color var(--t),border-color var(--t);" onmouseover="this.style.color='var(--fg)';this.style.borderColor='var(--fg-3)'" onmouseout="this.style.color='var(--fg-2)';this.style.borderColor=''">
+            ← Back to projects
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PROJECT WORKSPACE ── -->
+    <div id="view-workspace" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
+      <div class="topbar">
+        <span class="tb-title">Committa</span>
+        <span class="tb-sep"></span>
+        <span class="tb-path" id="tb-path">Overview</span>
+        <div class="tb-right">
+          <button class="tb-icon" onclick="showPage('updates')" title="Updates">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+              <path d="M8 1.5a5.5 5.5 0 0 1 5.5 5.5v3l1 2H1.5l1-2V7A5.5 5.5 0 0 1 8 1.5zM6.5 13.5a1.5 1.5 0 0 0 3 0"/>
+            </svg>
+            <div class="tb-ndot" id="tb-ndot" style="display:none;"></div>
+          </button>
+        </div>
+      </div>
+
+    <div class="scroll" id="scroll">
+
+      <!-- ══ OVERVIEW ══ -->
+      <div class="page active" id="page-dashboard">
+        <!-- Project title header -->
+        <div style="padding:40px 40px 0;border-bottom:1px solid var(--rule);display:flex;align-items:flex-end;justify-content:space-between;padding-bottom:28px;">
+          <div>
+            <div style="font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--cream);opacity:.55;margin-bottom:10px;">Active Project</div>
+            <div style="font-family:var(--serif);font-size:36px;color:var(--cream);line-height:1.05;letter-spacing:-.01em;" id="dash-project-type">Website Creation</div>
+          </div>
+          <span class="chip chip-em" style="margin-bottom:6px;">In Progress</span>
+        </div>
+        <div class="stat-strip">
+          <div class="stat-cell">
+            <div class="stat-eye">Updates posted</div>
+            <div class="stat-num" style="color:var(--cream);" id="stat-ct">0</div>
+            <div class="stat-sub"><span class="stat-up">↑</span>&nbsp;Active</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-eye">Build progress</div>
+            <div class="stat-num">68<span style="font-size:17px;color:var(--fg-3)">%</span></div>
+            <div class="stat-sub"><span class="stat-up">↑</span>&nbsp;On track</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-eye">Files delivered</div>
+            <div class="stat-num">12</div>
+            <div class="stat-sub" style="color:var(--fg-3);">This sprint</div>
+          </div>
+          <div class="stat-cell" style="border-right:none;">
+            <div class="stat-eye">Balance due</div>
+            <div class="stat-num" style="color:var(--ember);">£1,960</div>
+            <div class="stat-sub stat-warn">Due now</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 320px;border-top:none;">
+          <div style="border-right:1px solid var(--rule);">
+            <div class="panel-head">
+              <span class="panel-title">Website Build Progress</span>
+              <span class="chip chip-cream">In Progress</span>
+            </div>
+            <div class="panel-body">
+              <div class="prog-row">
+                <div class="prog-label"><span class="prog-name">Brand Identity &amp; Logo</span><span class="prog-pct">90</span></div>
+                <div class="prog-track"><div class="prog-fill" style="width:90%;"></div></div>
+              </div>
+              <div class="prog-row">
+                <div class="prog-label"><span class="prog-name">Content &amp; Copywriting</span><span class="prog-pct">80</span></div>
+                <div class="prog-track"><div class="prog-fill em" style="width:80%;animation-delay:.1s"></div></div>
+              </div>
+              <div class="prog-row">
+                <div class="prog-label"><span class="prog-name">Website Design &amp; UI</span><span class="prog-pct">65</span></div>
+                <div class="prog-track"><div class="prog-fill sky" style="width:65%;animation-delay:.2s"></div></div>
+              </div>
+              <div class="prog-row">
+                <div class="prog-label"><span class="prog-name">Development &amp; Build</span><span class="prog-pct">40</span></div>
+                <div class="prog-track"><div class="prog-fill dim" style="width:40%;animation-delay:.3s"></div></div>
+              </div>
+            </div>
+
+            <div style="height:1px;background:var(--rule);"></div>
+
+            <div class="panel-head">
+              <span class="panel-title">Latest Updates</span>
+              <button class="panel-act" onclick="showPage('updates')">All updates →</button>
+            </div>
+            <div id="dash-feed"></div>
+          </div>
+
+          <div>
+            <div class="panel-head"><span class="panel-title">Build Timeline</span></div>
+            <div class="ms-wrap" id="dash-ms"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ UPDATES ══ -->
+      <div class="page" id="page-updates">
+        <div class="sect" style="padding-bottom:18px;">
+          <div class="ph" style="margin-bottom:0;">
+            <div class="ph-eye">From Committa</div>
+            <div class="ph-title">Project Updates</div>
+          </div>
+        </div>
+        <div id="main-feed"></div>
+      </div>
+
+      <!-- ══ MESSAGES ══ -->
+      <div class="page" id="page-messages" style="height:calc(100vh - 54px);display:none;">
+        <div class="msg-shell">
+          <!-- Client list -->
+          <div class="msg-list">
+            <div class="msg-list-head">Conversations</div>
+            <div id="convo-list"></div>
+          </div>
+          <!-- Thread -->
+          <div class="msg-thread">
+            <div class="msg-thread-head">
+              <div class="mth-avatar" id="mth-av">A</div>
+              <div>
+                <div class="mth-name" id="mth-name">—</div>
+                <div class="mth-sub" id="mth-sub">Client</div>
+              </div>
+              <div class="mth-status">
+                <span class="sb-dot"></span> Online
+              </div>
+            </div>
+            <div class="msg-scroll" id="msg-scroll"></div>
+            <div class="msg-input-bar">
+              <textarea class="msg-input" id="msg-input" rows="1" placeholder="Write a message to your client…" onkeydown="msgKey(event)"></textarea>
+              <button class="msg-send" onclick="sendMsg()">Send</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ MILESTONES ══ -->
+      <div class="page" id="page-milestones">
+        <div class="sect">
+          <div class="ph">
+            <div class="ph-eye">Your Build</div>
+            <div class="ph-title">Website Timeline</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
+            <div class="panel">
+              <div class="panel-head"><span class="panel-title">All Milestones</span></div>
+              <div class="ms-wrap">
+                <div class="ms-item">
+                  <div class="ms-node done">✓</div>
+                  <div><div class="ms-name">Discovery &amp; Strategy</div></div>
+                </div>
+                <div class="ms-item">
+                  <div class="ms-node done">✓</div>
+                  <div><div class="ms-name">Brand Identity &amp; Logo</div></div>
+                </div>
+                <div class="ms-item">
+                  <div class="ms-node done">✓</div>
+                  <div><div class="ms-name">Content &amp; Wireframes</div></div>
+                </div>
+                <div class="ms-item">
+                  <div class="ms-node now">◈</div>
+                  <div><div class="ms-name">Website Design &amp; Prototype</div></div>
+                </div>
+                <div class="ms-item">
+                  <div class="ms-node next">○</div>
+                  <div><div class="ms-name">Development &amp; Build</div></div>
+                </div>
+                <div class="ms-item" style="padding-bottom:0;">
+                  <div class="ms-node next">○</div>
+                  <div><div class="ms-name">Testing, QA &amp; Launch</div></div>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:16px;">
+              <div class="panel">
+                <div class="panel-head"><span class="panel-title">Current Phase</span><span class="chip chip-em">Active</span></div>
+                <div class="panel-body">
+                  <div style="font-family:var(--serif);font-size:18px;color:var(--fg);margin-bottom:8px;">Website Design</div>
+                  <div style="font-size:12px;color:var(--fg-2);line-height:1.65;font-weight:300;margin-bottom:14px;">
+                    High-fidelity page designs, interactive prototype, mobile-responsive layouts, and full UI component library.
+                  </div>
+                  <div class="prog-track"><div class="prog-fill sky" style="width:65%;"></div></div>
+                  <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--fg-3);">
+                    <span>65% complete</span>
+                  </div>
+                </div>
+              </div>
+              <div class="panel">
+                <div class="panel-head"><span class="panel-title">Up Next</span><span class="chip chip-ember">Scheduled</span></div>
+                <div class="panel-body">
+                  <div style="font-family:var(--serif);font-size:18px;color:var(--fg);margin-bottom:8px;">Development</div>
+                  <div style="font-size:12px;color:var(--fg-2);line-height:1.65;font-weight:300;">
+                    Full front-end and back-end build, CMS integration, SEO setup, and performance optimisation.
+                  </div>
+                  <div style="margin-top:12px;font-size:9px;color:var(--fg-4);letter-spacing:.08em;text-transform:uppercase;">Starts May 1, 2026</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ FILES ══ -->
+      <div class="page" id="page-files">
+        <div class="sect" style="border-bottom:1px solid var(--rule);">
+          <div class="ph" style="margin-bottom:10px;">
+            <div class="ph-eye">Your Build</div>
+            <div class="ph-title">Deliverables</div>
+          </div>
+          <div style="font-size:12px;color:var(--fg-3);font-weight:300;line-height:1.65;">
+            Your code will be available here for you to use as you please.
+          </div>
+        </div>
+
+        <div style="padding:28px 40px;display:flex;flex-direction:column;gap:0;">
+
+          <!-- Design & Brand -->
+          <div class="deliv-panel">
+            <div class="deliv-head">
+              <div class="deliv-head-left">
+                <span class="panel-title">Design &amp; Brand</span>
+                <span class="chip chip-sky">3 files</span>
+              </div>
+              <span class="deliv-arrow">›</span>
+            </div>
+            <div class="deliv-files">
+              <div class="file-row"><div class="file-sq" style="font-size:6px;color:var(--cream);">●</div><div><div class="file-name">Brand_Guidelines_v3.pdf</div><div class="file-meta">4.2 MB · Delivered Apr 8, 2026</div></div><div class="file-dl">↓</div></div>
+              <div class="file-row"><div class="file-sq" style="font-size:6px;color:var(--cream);">●</div><div><div class="file-name">Logo_Package_Final.zip</div><div class="file-meta">18.6 MB · Delivered Apr 5, 2026</div></div><div class="file-dl">↓</div></div>
+              <div class="file-row" style="border-bottom:none;"><div class="file-sq" style="font-size:6px;color:var(--cream);">●</div><div><div class="file-name">Homepage_Mockup_v2.fig</div><div class="file-meta">9.1 MB · Delivered Apr 3, 2026</div></div><div class="file-dl">↓</div></div>
+            </div>
+          </div>
+
+          <!-- Documents -->
+          <div class="deliv-panel">
+            <div class="deliv-head">
+              <div class="deliv-head-left">
+                <span class="panel-title">Documents</span>
+                <span class="chip chip-em">3 files</span>
+              </div>
+              <span class="deliv-arrow">›</span>
+            </div>
+            <div class="deliv-files">
+              <div class="file-row"><div class="file-sq" style="font-size:6px;color:var(--cream);">●</div><div><div class="file-name">Project_Scope_Agreement.pdf</div><div class="file-meta">1.1 MB · Mar 1, 2026</div></div><div class="file-dl">↓</div></div>
+              <div class="file-row"><div class="file-sq" style="font-size:6px;color:var(--cream);">●</div><div><div class="file-name">Content_Brief_v1.docx</div><div class="file-meta">0.8 MB · Mar 15, 2026</div></div><div class="file-dl">↓</div></div>
+              <div class="file-row" style="border-bottom:none;"><div class="file-sq" style="font-size:6px;color:var(--cream);">●</div><div><div class="file-name">Analytics_Audit_Report.xlsx</div><div class="file-meta">2.3 MB · Mar 22, 2026</div></div><div class="file-dl">↓</div></div>
+            </div>
+          </div>
+
+          <!-- Media Assets -->
+          <div class="deliv-panel" style="margin-bottom:0;">
+            <div class="deliv-head">
+              <div class="deliv-head-left">
+                <span class="panel-title">Media Assets</span>
+                <span class="chip chip-cream">2 files</span>
+              </div>
+              <span class="deliv-arrow">›</span>
+            </div>
+            <div class="deliv-files">
+              <div class="file-row"><div class="file-sq" style="font-size:6px;color:var(--cream);">●</div><div><div class="file-name">Photography_Selection.zip</div><div class="file-meta">47.2 MB · Apr 1, 2026</div></div><div class="file-dl">↓</div></div>
+              <div class="file-row" style="border-bottom:none;"><div class="file-sq" style="font-size:6px;color:var(--cream);">●</div><div><div class="file-name">Hero_Animation_Draft.mp4</div><div class="file-meta">22.8 MB · Apr 7, 2026</div></div><div class="file-dl">↓</div></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ══ INVOICES ══ -->
+      <div class="page" id="page-invoices">
+        <!-- Header + stats -->
+        <div class="sect" style="border-bottom:none;padding-bottom:0;">
+          <div class="ph">
+            <div class="ph-eye">Billing</div>
+            <div class="ph-title">Invoices</div>
+          </div>
+          <div class="stat-strip" style="border:1px solid var(--rule);margin-top:8px;">
+            <div class="stat-cell" style="background:none;">
+              <div class="stat-eye">Paid to date</div>
+              <div class="stat-num" style="font-size:36px;">£0</div>
+            </div>
+            <div class="stat-cell" style="background:none;">
+              <div class="stat-eye">Amount due</div>
+              <div class="stat-num" style="font-size:36px;color:var(--ember);">£1,960</div>
+            </div>
+            <div class="stat-cell" style="background:none;border-right:none;">
+              <div class="stat-eye">Total contract value</div>
+              <div class="stat-num" style="font-size:36px;">£1,960</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Spacer -->
+        <div style="height:64px;"></div>
+
+        <!-- Invoice rows pushed to bottom -->
+        <div class="panel" style="margin:0 40px 40px;">
+          <table class="inv-table">
+            <thead><tr><th>Invoice</th><th>Description</th><th>Amount</th><th>Due</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr>
+                <td data-label="Invoice"><span class="inv-num">001</span></td>
+                <td data-label="Description">Project Deposit — 30% down payment</td>
+                <td data-label="Amount" style="color:var(--ember);font-weight:500;">£590</td>
+                <td data-label="Due" style="color:var(--ember);">Due now</td>
+                <td data-label="Status"><span class="status-sq s-due">Unpaid</span></td>
+              </tr>
+              <tr>
+                <td data-label="Invoice"><span class="inv-num">002</span></td>
+                <td data-label="Description">Final payment — due on website publish &amp; go-live</td>
+                <td data-label="Amount">£1,370</td>
+                <td data-label="Due">On delivery</td>
+                <td data-label="Status"><span class="status-sq s-sched">Upcoming</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="alert-strip">
+            <span class="alert-icon">⚠</span>
+            <span class="alert-body"><strong>INV-001 · £590 is due to get your project started.</strong> Once received, work begins immediately. Questions? Message us directly in the portal.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ SETTINGS ══ -->
+      <div class="page" id="page-settings">
+        <div class="sect">
+          <div class="ph">
+            <div class="ph-eye">Account</div>
+            <div class="ph-title">Settings</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+            <div>
+              <div class="panel" style="margin-bottom:18px;">
+                <div class="panel-head"><span class="panel-title">Notifications</span></div>
+                <div class="panel-body">
+                  <div class="srow" style="padding-top:0;">
+                    <div><div class="srow-label">Email notifications</div><div class="srow-sub">Receive updates via email</div></div>
+                    <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+                  </div>
+                  <div class="srow">
+                    <div><div class="srow-label">New update alerts</div><div class="srow-sub">Notify when Committa posts an update</div></div>
+                    <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+                  </div>
+                  <div class="srow">
+                    <div><div class="srow-label">Invoice reminders</div><div class="srow-sub">7-day and 1-day notices before due</div></div>
+                    <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+                  </div>
+                  <div class="srow">
+                    <div><div class="srow-label">New file alerts</div><div class="srow-sub">Notify when Committa shares a file</div></div>
+                    <button class="toggle" onclick="this.classList.toggle('on')"></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="panel">
+                <div class="panel-head"><span class="panel-title">Client Credentials</span></div>
+                <div class="panel-body">
+                  <div style="font-size:11px;color:var(--fg-3);margin-bottom:12px;line-height:1.6;font-weight:300;">
+                    Manage portal access. Add a client's email and set their password.
+                  </div>
+                  <div id="cred-list"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /scroll -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- COMPOSE MODAL -->
+<div class="backdrop hidden" id="compose-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">Post an update</div>
+      <div class="modal-sub">Clients will see this in their portal immediately.</div>
+    </div>
+    <div class="modal-body">
+      <div class="mf"><label>Title</label><input type="text" id="c-t" placeholder="e.g. Design review complete" /></div>
+      <div class="mf">
+        <label>Category</label>
+        <select id="c-c">
+          <option value="milestone">Milestone reached</option>
+          <option value="design">Design update</option>
+          <option value="development">Development update</option>
+          <option value="general" selected>General update</option>
+          <option value="file">File delivered</option>
+          <option value="invoice">Billing notice</option>
+        </select>
+      </div>
+      <div class="mf" style="margin-bottom:0;"><label>Message</label><textarea id="c-b" placeholder="Write your update for the client…"></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeCompose()">Cancel</button>
+      <button class="btn-act" onclick="postUpdate()">Post to portal</button>
+    </div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+<div id="expand-overlay"></div>
+
+<!-- Mobile bottom nav (hidden on desktop via CSS) -->
+<nav id="mobile-nav" style="display:none;">
+  <button class="mob-nav-item active" data-page="dashboard" onclick="mobNav(this)">
+    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+      <rect x="1" y="1" width="6" height="6"/><rect x="9" y="1" width="6" height="6"/>
+      <rect x="1" y="9" width="6" height="6"/><rect x="9" y="9" width="6" height="6"/>
+    </svg>
+    Overview
+  </button>
+  <button class="mob-nav-item" data-page="updates" onclick="mobNav(this)">
+    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+      <path d="M2 2h12v9H9l-1 2-1-2H2z"/>
+    </svg>
+    Updates
+  </button>
+  <button class="mob-nav-item" data-page="messages" onclick="mobNav(this)">
+    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+      <path d="M14 3H2v7h3v2.5L8 10h6V3z"/>
+    </svg>
+    Messages
+  </button>
+  <button class="mob-nav-item" data-page="invoices" onclick="mobNav(this)">
+    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+      <rect x="2" y="2" width="12" height="12"/><path d="M5 8h6M5 5h6M5 11h3"/>
+    </svg>
+    Invoices
+  </button>
+  <button class="mob-nav-item" data-page="milestones" onclick="mobNav(this)">
+    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+      <circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/>
+    </svg>
+    Timeline
+  </button>
+</nav>
+
+<script>
+/* ════════════════════════════════════════════════
+   COMMITTA DOT-MATRIX LOGO
+   Generates the COMMITTA logo as an inline SVG.
+   The O is rendered as the blue sphere from the
+   brand mark. All other letters use cream dots.
+════════════════════════════════════════════════ */
+function buildLogo(targetHeight, animate) {
+  const r   = 4.5;
+  const s   = 13;
+  const gap = 11;
+  const yo  = r + 1;
+  const C   = '#EDE5CC';
+
+  const PAT = {
+    C: { w:5, d:[[1,0],[2,0],[3,0],[0,1],[0,2],[0,3],[1,4],[2,4],[3,4]] },
+    O: { w:5, sphere:true },
+    M: { w:5, d:[[0,0],[4,0],[0,1],[1,1],[3,1],[4,1],[0,2],[2,2],[4,2],[0,3],[4,3],[0,4],[4,4]] },
+    I: { w:3, d:[[0,0],[1,0],[2,0],[1,1],[1,2],[1,3],[0,4],[1,4],[2,4]] },
+    T: { w:5, d:[[0,0],[1,0],[2,0],[3,0],[4,0],[2,1],[2,2],[2,3],[2,4]] },
+    A: { w:5, d:[[2,0],[1,1],[3,1],[0,2],[1,2],[2,2],[3,2],[4,2],[0,3],[4,3],[0,4],[4,4]] },
+  };
+
+  const SEQ = ['C','O','M','M','I','T','T','A'];
+  const H   = 4*s + 2*r + 2;
+
+  // Collect all dot x-positions so we can sort by x for the wave
+  let allDots = []; // { cx, cy, isSphere }
+  let x = r + 2;
+
+  for (const ch of SEQ) {
+    const def = PAT[ch];
+    const lw  = (def.w - 1) * s;
+    if (def.sphere) {
+      allDots.push({ cx: x + lw / 2, cy: yo + 2 * s, isSphere: true, r: 2 * s + r - 1 });
+    } else {
+      for (const [col, row] of def.d) {
+        allDots.push({ cx: x + col * s, cy: yo + row * s, isSphere: false });
+      }
+    }
+    x += lw + 2 * r + gap;
+  }
+
+  const W = x - gap + r + 2;
+
+  // Sort dots left-to-right for wave sequencing
+  const sorted = [...allDots].sort((a, b) => a.cx - b.cx);
+  const minX   = sorted[0].cx;
+  const maxX   = sorted[sorted.length - 1].cx;
+  const xRange = maxX - minX || 1;
+
+  // Build SVG elements
+  const waveDur   = 2.8;   // seconds for one full wave cycle (idle)
+  const waveDelay = 1.4;   // how long wave takes to travel across (half of dur)
+  const revealDur = 0.55;  // reveal animation duration per dot
+  const revealSpread = 0.7; // total spread of reveal stagger in seconds
+
+  let defs = `<defs>
+    <radialGradient id="cg" cx="34%" cy="28%" r="66%">
+      <stop offset="0%"   stop-color="#c8e8f8"/>
+      <stop offset="38%"  stop-color="#54a8dc"/>
+      <stop offset="100%" stop-color="#1258a0"/>
+    </radialGradient>
+    <radialGradient id="chigh" cx="28%" cy="24%" r="30%">
+      <stop offset="0%"   stop-color="rgba(255,255,255,0.45)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+    </radialGradient>`;
+
+  if (animate) {
+    defs += `
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>`;
+  }
+  defs += `</defs>`;
+
+  let els = [defs];
+
+  allDots.forEach((dot, i) => {
+    // x-position ratio 0..1 for wave phasing
+    const xRatio = (dot.cx - minX) / xRange;
+    // stagger delay for intro reveal: left to right
+    const revealDelay = (xRatio * revealSpread).toFixed(3);
+    // wave phase offset: each dot peaks at a different time
+    const wavePhase = (xRatio * waveDelay).toFixed(3);
+    // idle wave starts after reveal (revealSpread + revealDur + small pause)
+    const idleStart = (parseFloat(revealDelay) + revealDur + 0.3).toFixed(3);
+
+    if (dot.isSphere) {
+      if (animate) {
+        els.push(`
+          <g opacity="0">
+            <circle cx="${dot.cx}" cy="${dot.cy}" r="${dot.r}" fill="url(#cg)" filter="url(#glow)"/>
+            <circle cx="${dot.cx}" cy="${dot.cy}" r="${dot.r}" fill="url(#chigh)"/>
+            <animateTransform attributeName="transform" type="scale"
+              additive="sum" calcMode="spline"
+              values="0.4;1.08;1" keyTimes="0;0.7;1"
+              keySplines="0.2 0 0.2 1;0.4 0 0.6 1"
+              dur="${revealDur}s" begin="${revealDelay}s" fill="freeze"/>
+            <animate attributeName="opacity"
+              values="0;1" dur="0.18s" begin="${revealDelay}s" fill="freeze"/>
+          </g>`);
+      } else {
+        els.push(`<circle cx="${dot.cx}" cy="${dot.cy}" r="${dot.r}" fill="url(#cg)"/>`);
+        els.push(`<circle cx="${dot.cx}" cy="${dot.cy}" r="${dot.r}" fill="url(#chigh)"/>`);
+      }
+    } else {
+      if (animate) {
+        // Idle wave: brightness oscillation via opacity between 0.55 and 1.0
+        els.push(`
+          <circle cx="${dot.cx}" cy="${dot.cy}" r="${r}" fill="${C}" opacity="0">
+            <!-- reveal: pop in -->
+            <animate attributeName="r"
+              values="${r * 0.3};${r * 1.18};${r}"
+              keyTimes="0;0.6;1" calcMode="spline"
+              keySplines="0.2 0 0.2 1;0.4 0 0.6 1"
+              dur="${revealDur}s" begin="${revealDelay}s" fill="freeze"/>
+            <animate attributeName="opacity"
+              values="0;1" dur="0.15s" begin="${revealDelay}s" fill="freeze"/>
+            <!-- idle wave: dim → bright → dim, staggered by x position -->
+            <animate attributeName="opacity"
+              values="1;0.55;1" keyTimes="0;0.5;1" calcMode="spline"
+              keySplines="0.4 0 0.6 1;0.4 0 0.6 1"
+              dur="${waveDur}s" begin="${idleStart}s"
+              repeatCount="indefinite"/>
+          </circle>`);
+      } else {
+        els.push(`<circle cx="${dot.cx}" cy="${dot.cy}" r="${r}" fill="${C}"/>`);
+      }
+    }
+  });
+
+  const scale = targetHeight ? targetHeight / H : 1;
+  const sw = Math.round(W * scale);
+  const sh = Math.round(H * scale);
+
+  return `<svg viewBox="0 0 ${W} ${H}" width="${sw}" height="${sh}" xmlns="http://www.w3.org/2000/svg">${els.join('')}</svg>`;
+}
+
+/* ════════════════════════════════════════════════
+   CREDENTIALS — edit this array to manage access
+════════════════════════════════════════════════ */
+let CREDS = [
+  { email:'admin@committa.com',        password:'Committa@2024', name:'Committa',        role:'Administrator' },
+  { email:'client@example.com',        password:'Client@2024',   name:'Acme Corp',       role:'Client' },
+  { email:'sarah@yourcompany.com',     password:'Sarah@2024',    name:'Sarah Johnson',   role:'Client' },
+  { email:'jasmin@tiliah.com',         password:'Tiliah011',     name:'Tilia Health',    role:'Client' },
+  { email:'lenka@levelupmailing.com',  password:'levelup012',    name:'Levelup Mailing', role:'Client' },
+];
+
+/* ════════════════════════════════════════════════
+   UPDATES
+════════════════════════════════════════════════ */
+let UPDATES = [
+  { id:1, cat:'general', title:'Project kicked off — welcome!', body:"Kickoff call done. Discovery complete. We have a clear brief, a tight timeline, and everyone's aligned. Let's build something great.", date:'Mar 1, 2026', read:true },
+];
+let nid = 2;
+
+const CAT = {
+  milestone:   { g:'◆', cls:'chip-cream',  label:'Milestone'   },
+  design:      { g:'◉', cls:'chip-sky',    label:'Design'      },
+  development: { g:'▲', cls:'chip-em',     label:'Development' },
+  general:     { g:'●', cls:'chip-cream',  label:'Update'      },
+  file:        { g:'▣', cls:'chip-sky',    label:'File'        },
+  invoice:     { g:'◻', cls:'chip-ember',  label:'Invoice'     },
+};
+
+/* ════════════════════════════════════════════════
+   MESSAGES / CHAT
+════════════════════════════════════════════════ */
+let activeConvo = null;
+
+let THREADS = {
+  'Tilia Health': [
+    { from:'committa', text:"Welcome to your Committa client portal, Tilia Health! Everything about your website creation will live here — updates, milestones, files, invoices, and direct messages. Excited to get building.", time:'Mar 1, 2026 · 9:14am' },
+    { from:'committa', text:"Your project has officially kicked off. Discovery is complete and we have a clear brief. We'll keep this thread updated as things progress — feel free to message us any time.", time:'Mar 1, 2026 · 9:20am' },
+  ],
+  'Acme Corp': [
+    { from:'committa', text:"Welcome to your Committa client portal! Everything about your website build will live here — updates, files, invoices, and direct messages. Excited to get building.", time:'Mar 1, 2026 · 9:14am' },
+  ],
+  'Sarah Johnson': [
+    { from:'committa', text:"Hi Sarah — your portal is live. You'll be able to see all progress, files, and invoices here as we build your site.", time:'Mar 5, 2026 · 9:00am' },
+  ],
+  'Levelup Mailing': [
+    { from:'committa', text:"Welcome to your Committa client portal, Levelup Mailing! This is your central hub for both projects — AI Generations and Email Agent. You'll find updates, deliverables, invoices, and direct messaging all in one place.", time:'Apr 1, 2026 · 10:00am' },
+    { from:'committa', text:"A quick note on AI Generations: we've completed and delivered the first 3 images. They're available in your Deliverables section. Let us know your thoughts so we can keep the momentum going.", time:'Apr 1, 2026 · 10:05am' },
+  ],
+};
+
+let me = null;
+
+/* ════════════════════════════════════════════════
+   LOGIN / LOGOUT
+════════════════════════════════════════════════ */
+function handleLogin(ev) {
+  ev.preventDefault();
+  const email = document.getElementById('le').value.trim().toLowerCase();
+  const pw    = document.getElementById('lp').value;
+  const err   = document.getElementById('l-err');
+  const btn   = document.getElementById('l-btn');
+  const lbl   = document.getElementById('l-label');
+  err.textContent = ''; btn.disabled = true; lbl.textContent = 'Verifying…';
+  setTimeout(() => {
+    const user = CREDS.find(u => u.email.toLowerCase() === email && u.password === pw);
+    if (user) {
+      me = user;
+      document.getElementById('view-login').classList.add('hidden');
+      document.getElementById('view-app').classList.remove('hidden');
+      initApp();
+    } else {
+      err.textContent = '⚠  Incorrect email or password.';
+      btn.disabled = false; lbl.textContent = 'Sign in to portal';
+    }
+  }, 480);
+}
+
+function logout() {
+  me = null;
+  activeProject = null;
+  showMobileNav(false);
+  document.getElementById('view-app').classList.add('hidden');
+  document.getElementById('view-login').classList.remove('hidden');
+  document.getElementById('lp').value = '';
+  document.getElementById('l-err').textContent = '';
+  // Reset view state so next login starts at project picker
+  document.getElementById('view-workspace').style.display = 'none';
+  document.getElementById('view-new-project').style.display = 'none';
+}
+
+/* ════════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════════ */
+function initApp() {
+  const ini = me.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  const firstName = me.name.split(' ')[0];
+
+  // Level-1 sidebar
+  document.getElementById('sb-cname').textContent = me.name;
+  document.getElementById('sb-av').textContent = ini;
+  document.getElementById('sb-uname').textContent = me.name;
+  document.getElementById('sb-role').textContent = me.role;
+
+  // Level-2 sidebar
+  document.getElementById('sb-av-2').textContent = ini;
+  document.getElementById('sb-uname-2').textContent = me.name;
+  document.getElementById('sb-role-2').textContent = me.role;
+
+  // Portal heading — client name + "'s Portal"
+  document.getElementById('proj-welcome').textContent = `${me.name}'s Portal`;
+  document.getElementById('proj-eyebrow').textContent = 'Client Portal · Committa';
+
+  // Pre-populate workspace data
+  renderAll();
+  // Admin: default to first thread; client thread selected when opening a project
+  if (me.role === 'Administrator') {
+    const clients = Object.keys(THREADS);
+    if (clients.length) selectConvo(clients[0]);
+  }
+
+  // Show project picker (Level 1)
+  document.getElementById('sb-projects').style.display = 'flex';
+  document.getElementById('sb-project-nav').style.display = 'none';
+  document.getElementById('view-projects').style.display = 'flex';
+  document.getElementById('view-new-project').style.display = 'none';
+  document.getElementById('view-workspace').style.display = 'none';
+
+  renderProjList();
+  renderProjCards();
+}
+
+function renderAll() {
+  renderFeed('main-feed', UPDATES);
+  renderFeed('dash-feed', UPDATES.slice(0,3), true);
+  renderDashMS();
+  renderCredList();
+  updateBadge();
+  renderConvoList();
+  document.getElementById('stat-ct').textContent = UPDATES.length;
+}
+
+/* ════════════════════════════════════════════════
+   FEEDS
+════════════════════════════════════════════════ */
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function feedItem(u, compact) {
+  const c = CAT[u.cat] || CAT.general;
+  return `<div class="feed-item">
+    <div class="feed-glyph">${c.g}</div>
+    <div class="feed-body">
+      <div class="feed-row1">
+        <div class="feed-name">${esc(u.title)}</div>
+        <div class="feed-date">${u.date}</div>
+      </div>
+      <div class="feed-text" style="${compact?'-webkit-line-clamp:2;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden;':''}">
+        ${esc(u.body)}
+      </div>
+      <span class="chip ${c.cls}">${c.label}</span>
+      ${!u.read ? '<span class="chip chip-new" style="margin-left:6px;">New</span>' : ''}
+    </div>
+  </div>`;
+}
+
+function renderFeed(id, list, compact=false) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.innerHTML = list.length
+    ? list.map(u => feedItem(u, compact)).join('')
+    : '<div class="empty">No updates yet.</div>';
+}
+
+function renderDashMS() {
+  const el = document.getElementById('dash-ms');
+  if (!el) return;
+  const items = [
+    { st:'done', name:'Discovery & Strategy',    when:'Mar 1, 2026' },
+    { st:'done', name:'Brand Identity',          when:'Mar 20, 2026' },
+    { st:'done', name:'Content & Wireframes',    when:'Apr 1, 2026' },
+    { st:'now',  name:'Website Design',          when:'' },
+    { st:'next', name:'Development',             when:'May 1 – May 25' },
+    { st:'next', name:'Launch',                  when:'Jun 1, 2026' },
+  ];
+  el.innerHTML = items.map((m,i) => `
+    <div class="ms-item" ${i===items.length-1?'style="padding-bottom:0"':''}>
+      <div class="ms-node ${m.st}">${m.st==='done'?'✓':m.st==='now'?'◈':'○'}</div>
+      <div><div class="ms-name">${esc(m.name)}</div></div>
+    </div>`).join('');
+}
+
+/* ════════════════════════════════════════════════
+   MESSAGES
+════════════════════════════════════════════════ */
+function renderConvoList() {
+  const el = document.getElementById('convo-list');
+  if (!el) return;
+
+  if (me && me.role !== 'Administrator') {
+    // Client view: only show their own Committa conversation
+    const threadKey = me.name;
+    const msgs = THREADS[threadKey] || [];
+    const last = msgs[msgs.length - 1];
+    const isActive = threadKey === activeConvo;
+    el.innerHTML = `
+      <div class="msg-convo ${isActive ? 'active' : ''}" onclick="selectConvo('${esc(threadKey)}')">
+        <div class="mc-name"><span>Committa</span></div>
+        <div class="mc-preview">${last ? esc(last.text) : 'No messages yet.'}</div>
+      </div>
+      <div style="padding:16px;font-size:10px;color:var(--fg-4);line-height:1.65;border-top:1px solid var(--rule);font-weight:300;">
+        Conversations with team members will be available here once their accounts are created.
+      </div>`;
+  } else {
+    // Admin view: show all threads
+    el.innerHTML = Object.entries(THREADS).map(([name, msgs]) => {
+      const last = msgs[msgs.length - 1];
+      const isActive = name === activeConvo;
+      return `<div class="msg-convo ${isActive ? 'active' : ''}" onclick="selectConvo('${esc(name)}')">
+        <div class="mc-name"><span>${esc(name)}</span></div>
+        <div class="mc-preview">${last ? esc(last.text) : ''}</div>
+      </div>`;
+    }).join('');
+  }
+}
+
+function selectConvo(name) {
+  activeConvo = name;
+  renderConvoList();
+
+  const isClient = me && me.role !== 'Administrator';
+  const displayName = isClient ? 'Committa' : name;
+  const ini = displayName.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('mth-av').textContent = ini;
+  document.getElementById('mth-name').textContent = displayName;
+  document.getElementById('mth-sub').textContent = isClient ? 'Your project team' : 'Client · Committa Build Project';
+
+  renderThread();
+}
+
+function renderThread() {
+  const el = document.getElementById('msg-scroll');
+  if (!el || !activeConvo) return;
+  const msgs = THREADS[activeConvo] || [];
+
+  if (!msgs.length) { el.innerHTML = '<div class="empty">No messages yet. Send the first one.</div>'; return; }
+
+  let html = '';
+  let lastDate = '';
+
+  for (const m of msgs) {
+    const date = m.time.split('·')[0].trim();
+    if (date !== lastDate) {
+      html += `<div class="msg-date-sep">${esc(date)}</div>`;
+      lastDate = date;
+    }
+    const isCommittta = m.from === 'committa';
+    html += `
+      <div class="msg-bubble ${isCommittta ? 'committa' : 'client'}">
+        <div class="bubble-sender ${isCommittta ? 'bubble-committa' : 'bubble-client'}">${isCommittta ? 'Committa' : esc(activeConvo)}</div>
+        <div class="bubble-body ${isCommittta ? 'bubble-committa' : 'bubble-client'}">${esc(m.text)}</div>
+        <div class="bubble-meta">${esc(m.time.split('·')[1]?.trim() || '')}</div>
+      </div>`;
+  }
+
+  el.innerHTML = html;
+  el.scrollTop = el.scrollHeight;
+}
+
+function sendMsg() {
+  const inp = document.getElementById('msg-input');
+  const text = inp.value.trim();
+  if (!text || !activeConvo) return;
+  const now = new Date();
+  const mos = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const t = now.toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit'});
+  const d = `${mos[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+  THREADS[activeConvo] = THREADS[activeConvo] || [];
+  THREADS[activeConvo].push({ from:'committa', text, time:`${d} · ${t}` });
+  inp.value = '';
+  inp.style.height = '';
+  renderThread();
+  renderConvoList();
+}
+
+function msgKey(ev) {
+  if (ev.key === 'Enter' && !ev.shiftKey) { ev.preventDefault(); sendMsg(); }
+  // Auto-resize
+  const el = ev.target;
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 96) + 'px';
+}
+
+/* ════════════════════════════════════════════════
+   BADGE
+════════════════════════════════════════════════ */
+function updateBadge() {
+  const n  = UPDATES.filter(u => !u.read).length;
+  const b  = document.getElementById('sb-badge');
+  const d  = document.getElementById('tb-ndot');
+  b.textContent = n; b.style.display = n ? 'flex' : 'none';
+  d.style.display = n ? 'block' : 'none';
+}
+
+/* ════════════════════════════════════════════════
+   NAVIGATION
+════════════════════════════════════════════════ */
+const PATHS = {
+  dashboard:  'Overview',
+  updates:    'Project Updates',
+  messages:   'Messages',
+  milestones: 'Build Timeline',
+  files:      'Deliverables',
+  invoices:   'Invoices',
+  settings:   'Settings',
+};
+
+function nav(el) {
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  showPage(el.dataset.page);
+}
+
+function showPage(id) {
+  // Sync mobile nav highlight
+  document.querySelectorAll('.mob-nav-item').forEach(b => {
+    b.classList.toggle('active', b.dataset.page === id);
+  });
+
+  document.querySelectorAll('.page').forEach(p => {
+    p.classList.remove('active');
+    p.style.display = '';
+  });
+  const p = document.getElementById('page-' + id);
+  if (!p) return;
+  p.classList.add('active');
+  if (id === 'messages') p.style.display = 'block';
+
+  const n = document.querySelector(`[data-page="${id}"]`);
+  if (n) { document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active')); n.classList.add('active'); }
+
+  document.getElementById('tb-path').textContent = PATHS[id] || id;
+  document.getElementById('scroll').scrollTop = 0;
+
+  if (id === 'updates') {
+    UPDATES.forEach(u => u.read = true);
+    updateBadge();
+    renderFeed('main-feed', UPDATES);
+  }
+
+  if (id === 'messages' && activeConvo) {
+    setTimeout(() => {
+      const ms = document.getElementById('msg-scroll');
+      if (ms) ms.scrollTop = ms.scrollHeight;
+    }, 50);
+  }
+}
+
+/* ════════════════════════════════════════════════
+   COMPOSE
+════════════════════════════════════════════════ */
+function openCompose() {
+  document.getElementById('compose-modal').classList.remove('hidden');
+  setTimeout(() => document.getElementById('c-t').focus(), 80);
+}
+function closeCompose() {
+  document.getElementById('compose-modal').classList.add('hidden');
+  document.getElementById('c-t').value = '';
+  document.getElementById('c-b').value = '';
+}
+function postUpdate() {
+  const title = document.getElementById('c-t').value.trim();
+  const body  = document.getElementById('c-b').value.trim();
+  const cat   = document.getElementById('c-c').value;
+  if (!title || !body) return;
+  const d = new Date();
+  const ms = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  UPDATES.unshift({ id:nid++, cat, title, body, date:`${ms[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`, read:false });
+  closeCompose();
+  renderAll();
+  toast('Update posted', `"${title}" is now live in the portal.`);
+}
+
+/* ════════════════════════════════════════════════
+   CREDENTIALS
+════════════════════════════════════════════════ */
+function renderCredList() {
+  const el = document.getElementById('cred-list');
+  if (!el) return;
+  el.innerHTML = `
+    <div class="cred-row">
+      <div class="sb-avatar" style="width:22px;height:22px;font-size:9px;">${me.name[0]}</div>
+      <div style="flex:1;">
+        <div class="cred-email">${esc(me.email)}</div>
+        <div class="cred-role">${esc(me.role)} · ${esc(me.name)}</div>
+      </div>
+    </div>`;
+}
+function addCred() {
+  const email = document.getElementById('nc-e').value.trim();
+  const pw    = document.getElementById('nc-p').value.trim();
+  if (!email || !pw) return;
+  const name  = email.split('@')[0].replace(/[._-]/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+  CREDS.push({ email, password:pw, name, role:'Client' });
+  THREADS[name] = [];
+  document.getElementById('nc-e').value = '';
+  document.getElementById('nc-p').value = '';
+  renderCredList();
+  renderConvoList();
+  toast('Client added', `${email} can now access the portal.`);
+}
+function removeCred(i) {
+  if (CREDS[i]?.email === me?.email) { toast('Cannot remove', 'You cannot remove your own account.'); return; }
+  CREDS.splice(i, 1);
+  renderCredList();
+}
+
+/* ════════════════════════════════════════════════
+   TOAST
+════════════════════════════════════════════════ */
+function toast(title, body) {
+  const c = document.getElementById('toasts');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `<div class="toast-t">${esc(title)}</div><div class="toast-b">${esc(body)}</div>`;
+  c.appendChild(t);
+  setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 280); }, 3000);
+}
+
+/* ════════════════════════════════════════════════
+   KEYBOARD
+════════════════════════════════════════════════ */
+document.getElementById('compose-modal').addEventListener('click', e => { if (e.target.id === 'compose-modal') closeCompose(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeCompose();
+  if (e.key === 'n' && !['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName) && me) openCompose();
+});
+
+/* ════════════════════════════════════════════════
+   PROJECTS
+════════════════════════════════════════════════ */
+const PROJECTS = {
+  'Tilia Health':  [{ name:'Tilia Health Website',  type:'Website Creation',    status:'In Progress' }],
+  'Acme Corp':     [{ name:'Acme Corp Website',     type:'Website Creation',    status:'In Progress' }],
+  'Sarah Johnson': [{ name:'Sarah Johnson Website', type:'Website Creation',    status:'In Progress' }],
+  'Levelup Mailing': [
+    { name:'AI Generations',  type:'AI Image Generation', status:'In Progress', eyebrow:'AI Project',    detail:'3 images delivered' },
+    { name:'Email Agent',     type:'Email Automation',    status:'In Progress', eyebrow:'Automation',    detail:'In development'      },
+  ],
+  'Committa':      [
+    { name:'Tilia Health Website',  type:'Website Creation',    status:'In Progress' },
+    { name:'Acme Corp Website',     type:'Website Creation',    status:'In Progress' },
+    { name:'Sarah Johnson Website', type:'Website Creation',    status:'In Progress' },
+    { name:'AI Generations',        type:'AI Image Generation', status:'In Progress', eyebrow:'AI Project',  detail:'3 images delivered' },
+    { name:'Email Agent',           type:'Email Automation',    status:'In Progress', eyebrow:'Automation',  detail:'In development'     },
+  ],
+};
+
+let activeProject = null;
+
+function getMyProjects() {
+  return PROJECTS[me.name] || [];
+}
+
+function renderProjList() {
+  const el = document.getElementById('proj-list');
+  if (!el) return;
+  const projs = getMyProjects();
+  el.innerHTML = projs.map(p => `
+    <div class="sb-item" onclick="openProject('${p.name.replace(/'/g,"\\'")}')">
+      <svg class="sb-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+        <rect x="2" y="2" width="12" height="12" rx="1"/><path d="M5 5h6M5 8h4"/>
+      </svg>
+      ${esc(p.name)}
+    </div>`).join('') || '<div style="padding:8px 18px;font-size:11px;color:var(--fg-4);">No projects yet.</div>';
+}
+
+function renderProjCards() {
+  const el = document.getElementById('proj-cards');
+  if (!el) return;
+  const projs = getMyProjects();
+  if (!projs.length) {
+    el.innerHTML = '<div class="empty">No projects yet. Start a new one above.</div>';
+    return;
+  }
+  el.innerHTML = projs.map((p, i) => `
+    <div class="proj-card" style="animation-delay:${0.65 + i * 0.1}s;" onclick="expandToProject(event, '${p.name.replace(/'/g,"\\'")}')">
+      <div class="proj-card-eye">${esc(p.eyebrow || 'Website Build')}</div>
+      <div class="proj-card-name">${esc(p.name)}</div>
+      ${p.detail ? `<div style="font-size:11px;color:var(--fg-3);margin-bottom:10px;font-weight:300;">${esc(p.detail)}</div>` : ''}
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="proj-card-status">
+          <span class="proj-card-status-dot"></span>${esc(p.status)}
+        </span>
+        <span class="proj-card-arrow">Open portal →</span>
+      </div>
+    </div>`).join('');
+}
+
+function expandToProject(event, name) {
+  const card   = event.currentTarget;
+  const rect   = card.getBoundingClientRect();
+  const ov     = document.getElementById('expand-overlay');
+  const main   = document.getElementById('main-area');
+  const mRect  = main.getBoundingClientRect();
+
+  // Snap overlay exactly onto the card with no transition
+  ov.style.transition = 'none';
+  ov.style.opacity    = '1';
+  ov.style.top        = rect.top    + 'px';
+  ov.style.left       = rect.left   + 'px';
+  ov.style.width      = rect.width  + 'px';
+  ov.style.height     = rect.height + 'px';
+
+  // Force reflow
+  void ov.offsetWidth;
+
+  // Expand to fill only the main content area (not the sidebar)
+  ov.classList.add('expanding');
+  ov.style.top    = mRect.top  + 'px';
+  ov.style.left   = mRect.left + 'px';
+  ov.style.width  = mRect.width  + 'px';
+  ov.style.height = mRect.height + 'px';
+
+  // Switch views at peak, then fade overlay away
+  setTimeout(() => {
+    openProject(name);
+    ov.style.transition = 'opacity 0.35s ease';
+    ov.style.opacity = '0';
+    setTimeout(() => {
+      ov.classList.remove('expanding');
+      ov.style.cssText = '';
+    }, 380);
+  }, 560);
+}
+
+function openProject(name) {
+  activeProject = name;
+  document.getElementById('sb-proj-name').textContent = name;
+
+  // Set dashboard project title from project data
+  const proj = getMyProjects().find(p => p.name === name);
+  const titleEl = document.getElementById('dash-project-type');
+  if (titleEl && proj) titleEl.textContent = proj.type || name;
+
+  document.getElementById('sb-projects').style.display = 'none';
+  document.getElementById('sb-project-nav').style.display = 'flex';
+
+  document.getElementById('view-projects').style.display = 'none';
+  document.getElementById('view-new-project').style.display = 'none';
+  document.getElementById('view-workspace').style.display = 'flex';
+
+  // Clients: select their own Committa thread
+  if (me.role !== 'Administrator') {
+    const threadKey = me.name;
+    if (THREADS[threadKey]) selectConvo(threadKey);
+  }
+
+  showMobileNav(true);
+  showPage('dashboard');
+}
+
+function backToProjects() {
+  activeProject = null;
+
+  document.getElementById('sb-projects').style.display = 'flex';
+  document.getElementById('sb-project-nav').style.display = 'none';
+
+  document.getElementById('view-projects').style.display = 'flex';
+  document.getElementById('view-new-project').style.display = 'none';
+  document.getElementById('view-workspace').style.display = 'none';
+
+  document.querySelectorAll('#sb-projects .sb-item').forEach(i => i.classList.remove('active'));
+
+  // Re-trigger entrance animations
+  const anims = [
+    ['proj-eyebrow', 'proj-eyebrow-anim'],
+    ['proj-welcome',  'proj-heading-anim'],
+  ];
+  anims.forEach(([id, cls]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove(cls);
+    void el.offsetWidth; // reflow
+    el.classList.add(cls);
+  });
+  // Re-render cards so their cardIn animation fires fresh
+  renderProjCards();
+  showMobileNav(false);
+}
+
+function openNewProject() {
+  document.getElementById('view-projects').style.display = 'none';
+  document.getElementById('view-new-project').style.display = 'flex';
+  document.getElementById('view-workspace').style.display = 'none';
+
+  document.getElementById('new-proj-form-wrap').style.display = 'block';
+  document.getElementById('new-proj-confirm').style.display = 'none';
+  document.getElementById('new-proj-input').value = '';
+
+  document.querySelectorAll('#sb-projects .sb-item').forEach(i => i.classList.remove('active'));
+  document.getElementById('new-proj-btn').classList.add('active');
+}
+
+function submitNewProject() {
+  const text = document.getElementById('new-proj-input').value.trim();
+  if (!text) return;
+  document.getElementById('new-proj-form-wrap').style.display = 'none';
+  document.getElementById('new-proj-confirm').style.display = 'block';
+}
+
+/* ════════════════════════════════════════════════
+   MOBILE NAV
+════════════════════════════════════════════════ */
+function isMobile() { return window.innerWidth <= 600; }
+
+function mobNav(el) {
+  document.querySelectorAll('.mob-nav-item').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  showPage(el.dataset.page);
+  // scroll workspace to top on mobile
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showMobileNav(visible) {
+  const nav = document.getElementById('mobile-nav');
+  if (nav) nav.style.display = visible && isMobile() ? 'flex' : 'none';
+}
+
+/* ════════════════════════════════════════════════
+   BOOT — inject logos
+════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  // Login logo — animated (40px, dots pop in left-to-right then wave)
+  const logoFull = document.getElementById('brand-logo-full');
+  if (logoFull) logoFull.innerHTML = buildLogo(40, true);
+
+  // Sidebar wordmark — static, no animation (20px)
+  ['sb-logo', 'sb-logo-nav'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = buildLogo(20, false);
+  });
+});
+</script>
+</body>
+</html>
