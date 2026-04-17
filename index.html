@@ -1410,6 +1410,15 @@
         Invoices
       </div>
 
+      <div class="sb-sec" id="sb-sec-agent" style="display:none;">Your Tool</div>
+      <div class="sb-item" data-page="agent" onclick="nav(this)" id="sb-item-agent" style="display:none;">
+        <svg class="sb-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
+          <rect x="1" y="3" width="14" height="10" rx="1.5"/>
+          <path d="M1 6l7 4 7-4"/>
+        </svg>
+        Email Agent
+      </div>
+
       <div class="sb-sec">Account</div>
       <div class="sb-item" data-page="settings" onclick="nav(this)">
         <svg class="sb-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
@@ -1757,6 +1766,28 @@
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ EMAIL AGENT ══ -->
+      <div class="page" id="page-agent">
+        <div class="sect" style="border-bottom:1px solid var(--rule);">
+          <div class="ph" style="margin-bottom:0;">
+            <div class="ph-eye">Your Tool</div>
+            <div class="ph-title">Email Finder Agent</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:360px;gap:18px;padding:48px 40px;text-align:center;">
+          <div style="width:52px;height:52px;border:1px solid var(--rule-hi);display:flex;align-items:center;justify-content:center;opacity:.5;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">
+              <rect x="2" y="4" width="20" height="16" rx="2"/>
+              <path d="M2 8l10 6 10-6"/>
+            </svg>
+          </div>
+          <div style="font-family:var(--serif);font-size:22px;color:var(--fg);line-height:1.2;">Coming Soon</div>
+          <div style="font-size:13px;color:var(--fg-3);font-weight:300;line-height:1.75;max-width:380px;">
+            This is where your email finder agent will be available. Once delivered, you'll be able to run searches, configure targeting, and export results directly from this page.
           </div>
         </div>
       </div>
@@ -2281,6 +2312,7 @@ const PATHS = {
   files:      'Deliverables',
   invoices:   'Invoices',
   settings:   'Settings',
+  agent:      'Email Agent',
 };
 
 function nav(el) {
@@ -2456,6 +2488,55 @@ const PROJECT_DATA = {
       { num:'002', desc:'Final payment — due on website publish & go-live', amount:'£1,370', amountColor:'',             due:'On delivery', dueColor:'',          statusCls:'s-sched', statusText:'Upcoming' },
     ],
     invAlert: '<strong>INV-001 · £590 is due to get your project started.</strong> Once received, work begins immediately. Questions? Message us directly in the portal.',
+  },
+
+  'Email Agent': {
+    statusChip:    { text:'In Development', cls:'chip-em' },
+    progressLabel: 'Build progress',
+    filesLabel:    'Leads found',
+    filesSub:      'Test run',
+    progressNum:   '45<span style="font-size:17px;color:var(--fg-3)">%</span>',
+    filesNum:      '—',
+    balanceNum:    '€0',
+    balanceColor:  'var(--emerald)',
+    balanceSub:    'All paid',
+    progTitle:     'Email Agent Progress',
+    progChip:      { text:'In Development', cls:'chip-em' },
+    timelineTitle: 'Agent Timeline',
+    progRows: [
+      { name:'Brief & Requirements',       pct:100, cls:''    },
+      { name:'Data Source Configuration',  pct:80,  cls:'em'  },
+      { name:'Agent Logic & Automation',   pct:45,  cls:'sky' },
+      { name:'Testing & Delivery',         pct:0,   cls:'dim' },
+    ],
+    msEyebrow: 'Your Project',
+    msTitle:   'Agent Timeline',
+    milestones: [
+      { state:'done', name:'Brief & Requirements'        },
+      { state:'done', name:'Data Source Configuration'   },
+      { state:'now',  name:'Agent Logic & Automation'    },
+      { state:'next', name:'Testing & QA'                },
+      { state:'next', name:'Delivery & Handoff'          },
+    ],
+    currentPhase: {
+      title: 'Agent Logic & Automation',
+      body:  'Building the core email finder logic, automation flows, and data enrichment pipeline. Agent will surface verified contacts based on your targeting criteria.',
+      pct:   45,
+    },
+    upNext: {
+      title: 'Testing & Delivery',
+      body:  'End-to-end QA on live data, accuracy validation, and final handoff with full documentation.',
+      sub:   null,
+    },
+    invPaid:  '€1,960',
+    invDue:   '€0',
+    invDueColor: 'var(--emerald)',
+    invTotal: '€1,960',
+    invRows: [
+      { num:'001', desc:'Email Agent — Project Deposit', amount:'€590',   amountColor:'', due:'Paid', dueColor:'', statusCls:'s-paid', statusText:'Paid' },
+      { num:'002', desc:'Final payment — on delivery',   amount:'€1,370', amountColor:'', due:'Paid', dueColor:'', statusCls:'s-paid', statusText:'Paid' },
+    ],
+    invAlert: null,
   },
 
   'AI Generations': {
@@ -2716,6 +2797,11 @@ function openProject(name) {
 
   // Apply per-project workspace data
   renderProjectData(name);
+
+  // Show Email Agent nav item only for that project
+  const showAgent = name === 'Email Agent';
+  document.getElementById('sb-sec-agent').style.display  = showAgent ? '' : 'none';
+  document.getElementById('sb-item-agent').style.display = showAgent ? '' : 'none';
 
   document.getElementById('sb-projects').style.display = 'none';
   document.getElementById('sb-project-nav').style.display = 'flex';
