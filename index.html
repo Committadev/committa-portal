@@ -1514,7 +1514,7 @@
             <div style="font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--cream);opacity:.55;margin-bottom:10px;">Active Project</div>
             <div style="font-family:var(--serif);font-size:36px;color:var(--cream);line-height:1.05;letter-spacing:-.01em;" id="dash-project-type">Website Creation</div>
           </div>
-          <span class="chip chip-em" style="margin-bottom:6px;">In Progress</span>
+          <span class="chip chip-em" style="margin-bottom:6px;" id="dash-status-chip">In Progress</span>
         </div>
         <div class="stat-strip">
           <div class="stat-cell">
@@ -1523,46 +1523,29 @@
             <div class="stat-sub"><span class="stat-up">↑</span>&nbsp;Active</div>
           </div>
           <div class="stat-cell">
-            <div class="stat-eye">Build progress</div>
-            <div class="stat-num">68<span style="font-size:17px;color:var(--fg-3)">%</span></div>
+            <div class="stat-eye" id="stat-progress-label">Build progress</div>
+            <div class="stat-num" id="stat-progress-num">68<span style="font-size:17px;color:var(--fg-3)">%</span></div>
             <div class="stat-sub"><span class="stat-up">↑</span>&nbsp;On track</div>
           </div>
           <div class="stat-cell">
-            <div class="stat-eye">Files delivered</div>
-            <div class="stat-num">12</div>
-            <div class="stat-sub" style="color:var(--fg-3);">This sprint</div>
+            <div class="stat-eye" id="stat-files-label">Files delivered</div>
+            <div class="stat-num" id="stat-files-num">12</div>
+            <div class="stat-sub" style="color:var(--fg-3);" id="stat-files-sub">This sprint</div>
           </div>
           <div class="stat-cell" style="border-right:none;">
             <div class="stat-eye">Balance due</div>
-            <div class="stat-num" style="color:var(--ember);">£1,960</div>
-            <div class="stat-sub stat-warn">Due now</div>
+            <div class="stat-num" id="stat-balance-num" style="color:var(--ember);">£1,960</div>
+            <div class="stat-sub" id="stat-balance-sub">Due now</div>
           </div>
         </div>
 
         <div style="display:grid;grid-template-columns:1fr 320px;border-top:none;">
           <div style="border-right:1px solid var(--rule);">
             <div class="panel-head">
-              <span class="panel-title">Website Build Progress</span>
-              <span class="chip chip-cream">In Progress</span>
+              <span class="panel-title" id="dash-prog-title">Build Progress</span>
+              <span class="chip chip-cream" id="dash-prog-chip">In Progress</span>
             </div>
-            <div class="panel-body">
-              <div class="prog-row">
-                <div class="prog-label"><span class="prog-name">Brand Identity &amp; Logo</span><span class="prog-pct">90</span></div>
-                <div class="prog-track"><div class="prog-fill" style="width:90%;"></div></div>
-              </div>
-              <div class="prog-row">
-                <div class="prog-label"><span class="prog-name">Content &amp; Copywriting</span><span class="prog-pct">80</span></div>
-                <div class="prog-track"><div class="prog-fill em" style="width:80%;animation-delay:.1s"></div></div>
-              </div>
-              <div class="prog-row">
-                <div class="prog-label"><span class="prog-name">Website Design &amp; UI</span><span class="prog-pct">65</span></div>
-                <div class="prog-track"><div class="prog-fill sky" style="width:65%;animation-delay:.2s"></div></div>
-              </div>
-              <div class="prog-row">
-                <div class="prog-label"><span class="prog-name">Development &amp; Build</span><span class="prog-pct">40</span></div>
-                <div class="prog-track"><div class="prog-fill dim" style="width:40%;animation-delay:.3s"></div></div>
-              </div>
-            </div>
+            <div class="panel-body" id="dash-prog-body"></div>
 
             <div style="height:1px;background:var(--rule);"></div>
 
@@ -1574,7 +1557,7 @@
           </div>
 
           <div>
-            <div class="panel-head"><span class="panel-title">Build Timeline</span></div>
+            <div class="panel-head"><span class="panel-title" id="dash-timeline-title">Build Timeline</span></div>
             <div class="ms-wrap" id="dash-ms"></div>
           </div>
         </div>
@@ -1624,64 +1607,15 @@
       <div class="page" id="page-milestones">
         <div class="sect">
           <div class="ph">
-            <div class="ph-eye">Your Build</div>
-            <div class="ph-title">Website Timeline</div>
+            <div class="ph-eye" id="ms-page-eyebrow">Your Build</div>
+            <div class="ph-title" id="ms-page-title">Project Timeline</div>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
             <div class="panel">
               <div class="panel-head"><span class="panel-title">All Milestones</span></div>
-              <div class="ms-wrap">
-                <div class="ms-item">
-                  <div class="ms-node done">✓</div>
-                  <div><div class="ms-name">Discovery &amp; Strategy</div></div>
-                </div>
-                <div class="ms-item">
-                  <div class="ms-node done">✓</div>
-                  <div><div class="ms-name">Brand Identity &amp; Logo</div></div>
-                </div>
-                <div class="ms-item">
-                  <div class="ms-node done">✓</div>
-                  <div><div class="ms-name">Content &amp; Wireframes</div></div>
-                </div>
-                <div class="ms-item">
-                  <div class="ms-node now">◈</div>
-                  <div><div class="ms-name">Website Design &amp; Prototype</div></div>
-                </div>
-                <div class="ms-item">
-                  <div class="ms-node next">○</div>
-                  <div><div class="ms-name">Development &amp; Build</div></div>
-                </div>
-                <div class="ms-item" style="padding-bottom:0;">
-                  <div class="ms-node next">○</div>
-                  <div><div class="ms-name">Testing, QA &amp; Launch</div></div>
-                </div>
-              </div>
+              <div class="ms-wrap" id="ms-list-main"></div>
             </div>
-            <div style="display:flex;flex-direction:column;gap:16px;">
-              <div class="panel">
-                <div class="panel-head"><span class="panel-title">Current Phase</span><span class="chip chip-em">Active</span></div>
-                <div class="panel-body">
-                  <div style="font-family:var(--serif);font-size:18px;color:var(--fg);margin-bottom:8px;">Website Design</div>
-                  <div style="font-size:12px;color:var(--fg-2);line-height:1.65;font-weight:300;margin-bottom:14px;">
-                    High-fidelity page designs, interactive prototype, mobile-responsive layouts, and full UI component library.
-                  </div>
-                  <div class="prog-track"><div class="prog-fill sky" style="width:65%;"></div></div>
-                  <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--fg-3);">
-                    <span>65% complete</span>
-                  </div>
-                </div>
-              </div>
-              <div class="panel">
-                <div class="panel-head"><span class="panel-title">Up Next</span><span class="chip chip-ember">Scheduled</span></div>
-                <div class="panel-body">
-                  <div style="font-family:var(--serif);font-size:18px;color:var(--fg);margin-bottom:8px;">Development</div>
-                  <div style="font-size:12px;color:var(--fg-2);line-height:1.65;font-weight:300;">
-                    Full front-end and back-end build, CMS integration, SEO setup, and performance optimisation.
-                  </div>
-                  <div style="margin-top:12px;font-size:9px;color:var(--fg-4);letter-spacing:.08em;text-transform:uppercase;">Starts May 1, 2026</div>
-                </div>
-              </div>
-            </div>
+            <div style="display:flex;flex-direction:column;gap:16px;" id="ms-panels-right"></div>
           </div>
         </div>
       </div>
@@ -1761,15 +1695,15 @@
           <div class="stat-strip" style="border:1px solid var(--rule);margin-top:8px;">
             <div class="stat-cell" style="background:none;">
               <div class="stat-eye">Paid to date</div>
-              <div class="stat-num" style="font-size:36px;">£0</div>
+              <div class="stat-num" style="font-size:36px;" id="inv-stat-paid">£0</div>
             </div>
             <div class="stat-cell" style="background:none;">
               <div class="stat-eye">Amount due</div>
-              <div class="stat-num" style="font-size:36px;color:var(--ember);">£1,960</div>
+              <div class="stat-num" style="font-size:36px;" id="inv-stat-due">£1,960</div>
             </div>
             <div class="stat-cell" style="background:none;border-right:none;">
               <div class="stat-eye">Total contract value</div>
-              <div class="stat-num" style="font-size:36px;">£1,960</div>
+              <div class="stat-num" style="font-size:36px;" id="inv-stat-total">£1,960</div>
             </div>
           </div>
         </div>
@@ -1777,32 +1711,8 @@
         <!-- Spacer -->
         <div style="height:64px;"></div>
 
-        <!-- Invoice rows pushed to bottom -->
-        <div class="panel" style="margin:0 40px 40px;">
-          <table class="inv-table">
-            <thead><tr><th>Invoice</th><th>Description</th><th>Amount</th><th>Due</th><th>Status</th></tr></thead>
-            <tbody>
-              <tr>
-                <td data-label="Invoice"><span class="inv-num">001</span></td>
-                <td data-label="Description">Project Deposit — 30% down payment</td>
-                <td data-label="Amount" style="color:var(--ember);font-weight:500;">£590</td>
-                <td data-label="Due" style="color:var(--ember);">Due now</td>
-                <td data-label="Status"><span class="status-sq s-due">Unpaid</span></td>
-              </tr>
-              <tr>
-                <td data-label="Invoice"><span class="inv-num">002</span></td>
-                <td data-label="Description">Final payment — due on website publish &amp; go-live</td>
-                <td data-label="Amount">£1,370</td>
-                <td data-label="Due">On delivery</td>
-                <td data-label="Status"><span class="status-sq s-sched">Upcoming</span></td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="alert-strip">
-            <span class="alert-icon">⚠</span>
-            <span class="alert-body"><strong>INV-001 · £590 is due to get your project started.</strong> Once received, work begins immediately. Questions? Message us directly in the portal.</span>
-          </div>
-        </div>
+        <!-- Invoice rows -->
+        <div class="panel" style="margin:0 40px 40px;" id="inv-panel"></div>
       </div>
 
       <!-- ══ SETTINGS ══ -->
@@ -2239,17 +2149,11 @@ function renderFeed(id, list, compact=false) {
 function renderDashMS() {
   const el = document.getElementById('dash-ms');
   if (!el) return;
-  const items = [
-    { st:'done', name:'Discovery & Strategy',    when:'Mar 1, 2026' },
-    { st:'done', name:'Brand Identity',          when:'Mar 20, 2026' },
-    { st:'done', name:'Content & Wireframes',    when:'Apr 1, 2026' },
-    { st:'now',  name:'Website Design',          when:'' },
-    { st:'next', name:'Development',             when:'May 1 – May 25' },
-    { st:'next', name:'Launch',                  when:'Jun 1, 2026' },
-  ];
+  const d = getProjectData(activeProject);
+  const items = d.milestones;
   el.innerHTML = items.map((m,i) => `
     <div class="ms-item" ${i===items.length-1?'style="padding-bottom:0"':''}>
-      <div class="ms-node ${m.st}">${m.st==='done'?'✓':m.st==='now'?'◈':'○'}</div>
+      <div class="ms-node ${m.state}">${m.state==='done'?'✓':m.state==='now'?'◈':'○'}</div>
       <div><div class="ms-name">${esc(m.name)}</div></div>
     </div>`).join('');
 }
@@ -2501,6 +2405,209 @@ document.addEventListener('keydown', e => {
 });
 
 /* ════════════════════════════════════════════════
+   PROJECT WORKSPACE DATA
+════════════════════════════════════════════════ */
+const PROJECT_DATA = {
+  _default: {
+    statusChip:    { text:'In Progress', cls:'chip-em' },
+    progressLabel: 'Build progress',
+    filesLabel:    'Files delivered',
+    filesSub:      'This sprint',
+    progressNum:   '68<span style="font-size:17px;color:var(--fg-3)">%</span>',
+    filesNum:      '12',
+    balanceNum:    '£1,960',
+    balanceColor:  'var(--ember)',
+    balanceSub:    'Due now',
+    progTitle:     'Website Build Progress',
+    progChip:      { text:'In Progress', cls:'chip-cream' },
+    timelineTitle: 'Build Timeline',
+    progRows: [
+      { name:'Brand Identity & Logo',   pct:90, cls:''    },
+      { name:'Content & Copywriting',   pct:80, cls:'em'  },
+      { name:'Website Design & UI',     pct:65, cls:'sky' },
+      { name:'Development & Build',     pct:40, cls:'dim' },
+    ],
+    msEyebrow: 'Your Build',
+    msTitle:   'Project Timeline',
+    milestones: [
+      { state:'done', name:'Discovery & Strategy'        },
+      { state:'done', name:'Brand Identity & Logo'       },
+      { state:'done', name:'Content & Wireframes'        },
+      { state:'now',  name:'Website Design & Prototype'  },
+      { state:'next', name:'Development & Build'         },
+      { state:'next', name:'Testing, QA & Launch'        },
+    ],
+    currentPhase: {
+      title: 'Website Design',
+      body:  'High-fidelity page designs, interactive prototype, mobile-responsive layouts, and full UI component library.',
+      pct:   65,
+    },
+    upNext: {
+      title: 'Development',
+      body:  'Full front-end and back-end build, CMS integration, SEO setup, and performance optimisation.',
+      sub:   'Starts May 1, 2026',
+    },
+    invPaid:  '£0',
+    invDue:   '£1,960',
+    invDueColor: 'var(--ember)',
+    invTotal: '£1,960',
+    invRows: [
+      { num:'001', desc:'Project Deposit — 30% down payment',              amount:'£590',    amountColor:'var(--ember)', due:'Due now', dueColor:'var(--ember)', statusCls:'s-due',   statusText:'Unpaid'   },
+      { num:'002', desc:'Final payment — due on website publish & go-live', amount:'£1,370', amountColor:'',             due:'On delivery', dueColor:'',          statusCls:'s-sched', statusText:'Upcoming' },
+    ],
+    invAlert: '<strong>INV-001 · £590 is due to get your project started.</strong> Once received, work begins immediately. Questions? Message us directly in the portal.',
+  },
+
+  'AI Generations': {
+    statusChip:    { text:'Completed', cls:'chip-sky' },
+    progressLabel: 'Completion',
+    filesLabel:    'Images delivered',
+    filesSub:      'All delivered',
+    progressNum:   '100<span style="font-size:17px;color:var(--fg-3)">%</span>',
+    filesNum:      '3',
+    balanceNum:    '€0',
+    balanceColor:  'var(--emerald)',
+    balanceSub:    'All paid',
+    progTitle:     'AI Generation Progress',
+    progChip:      { text:'Completed', cls:'chip-sky' },
+    timelineTitle: 'Project Timeline',
+    progRows: [
+      { name:'Brief & Creative Direction',   pct:100, cls:''    },
+      { name:'Image Generation',             pct:100, cls:'em'  },
+      { name:'Post-processing & Edits',      pct:100, cls:'sky' },
+      { name:'Final Review & Delivery',      pct:100, cls:'dim' },
+    ],
+    msEyebrow: 'Your Project',
+    msTitle:   'Project Timeline',
+    milestones: [
+      { state:'done', name:'Brief & Creative Direction' },
+      { state:'done', name:'Initial Concept Generation' },
+      { state:'done', name:'Image Refinement'           },
+      { state:'done', name:'Post-processing & Edits'    },
+      { state:'done', name:'Final Delivery'             },
+    ],
+    currentPhase: {
+      title: 'All Work Completed',
+      body:  'All requested AI-generated images have been created, refined, and delivered. The project is complete — ready to begin the next batch whenever you are.',
+      pct:   100,
+    },
+    upNext: {
+      title: 'Awaiting Further Requests',
+      body:  'Send us a new brief whenever you\'re ready and we\'ll get started right away.',
+      sub:   null,
+    },
+    invPaid:  '€1,960',
+    invDue:   '€0',
+    invDueColor: 'var(--emerald)',
+    invTotal: '€1,960',
+    invRows: [
+      { num:'001', desc:'AI Image Generation — Project Deposit',    amount:'€590',    amountColor:'', due:'Paid', dueColor:'', statusCls:'s-paid', statusText:'Paid' },
+      { num:'002', desc:'Final payment — delivered Apr 2026',       amount:'€1,370',  amountColor:'', due:'Paid', dueColor:'', statusCls:'s-paid', statusText:'Paid' },
+    ],
+    invAlert: null,
+  },
+};
+
+function getProjectData(name) {
+  return PROJECT_DATA[name] || PROJECT_DATA['_default'];
+}
+
+function renderProjectData(name) {
+  const d = getProjectData(name);
+
+  // ── Status chip ──
+  const chip = document.getElementById('dash-status-chip');
+  if (chip) { chip.textContent = d.statusChip.text; chip.className = 'chip ' + d.statusChip.cls; chip.style.marginBottom = '6px'; }
+
+  // ── Stats ──
+  const slbl = document.getElementById('stat-progress-label'); if (slbl) slbl.textContent = d.progressLabel;
+  const snum = document.getElementById('stat-progress-num');   if (snum) snum.innerHTML   = d.progressNum;
+  const flbl = document.getElementById('stat-files-label');    if (flbl) flbl.textContent = d.filesLabel;
+  const fnum = document.getElementById('stat-files-num');      if (fnum) fnum.textContent  = d.filesNum;
+  const fsub = document.getElementById('stat-files-sub');      if (fsub) fsub.textContent  = d.filesSub;
+  const bnum = document.getElementById('stat-balance-num');
+  if (bnum) { bnum.innerHTML = d.balanceNum; bnum.style.color = d.balanceColor; }
+  const bsub = document.getElementById('stat-balance-sub');
+  if (bsub) { bsub.textContent = d.balanceSub; bsub.style.color = d.balanceColor; }
+
+  // ── Progress bars ──
+  const ptitle = document.getElementById('dash-prog-title'); if (ptitle) ptitle.textContent = d.progTitle;
+  const pchip  = document.getElementById('dash-prog-chip');
+  if (pchip) { pchip.textContent = d.progChip.text; pchip.className = 'chip ' + d.progChip.cls; }
+  const pbody  = document.getElementById('dash-prog-body');
+  if (pbody) pbody.innerHTML = d.progRows.map((r,i) => `
+    <div class="prog-row">
+      <div class="prog-label"><span class="prog-name">${esc(r.name)}</span><span class="prog-pct">${r.pct}</span></div>
+      <div class="prog-track"><div class="prog-fill ${r.cls}" style="width:${r.pct}%;animation-delay:${i*.1}s"></div></div>
+    </div>`).join('');
+
+  // ── Timeline title ──
+  const ttitle = document.getElementById('dash-timeline-title'); if (ttitle) ttitle.textContent = d.timelineTitle;
+
+  // ── Milestones page ──
+  const msEye   = document.getElementById('ms-page-eyebrow'); if (msEye)   msEye.textContent   = d.msEyebrow;
+  const msTitle = document.getElementById('ms-page-title');   if (msTitle) msTitle.textContent  = d.msTitle;
+  const msList  = document.getElementById('ms-list-main');
+  if (msList) msList.innerHTML = d.milestones.map((m, i, arr) => {
+    const icon  = m.state === 'done' ? '✓' : m.state === 'now' ? '◈' : '○';
+    const last  = i === arr.length - 1 ? ' style="padding-bottom:0;"' : '';
+    return `<div class="ms-item"${last}><div class="ms-node ${m.state}">${icon}</div><div><div class="ms-name">${esc(m.name)}</div></div></div>`;
+  }).join('');
+
+  const msRight = document.getElementById('ms-panels-right');
+  if (msRight) {
+    const cp = d.currentPhase;
+    const un = d.upNext;
+    msRight.innerHTML = `
+      <div class="panel">
+        <div class="panel-head"><span class="panel-title">Current Phase</span><span class="chip chip-em">Active</span></div>
+        <div class="panel-body">
+          <div style="font-family:var(--serif);font-size:18px;color:var(--fg);margin-bottom:8px;">${esc(cp.title)}</div>
+          <div style="font-size:12px;color:var(--fg-2);line-height:1.65;font-weight:300;margin-bottom:14px;">${esc(cp.body)}</div>
+          <div class="prog-track"><div class="prog-fill sky" style="width:${cp.pct}%;"></div></div>
+          <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--fg-3);"><span>${cp.pct}% complete</span></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><span class="panel-title">Up Next</span><span class="chip chip-ember">Scheduled</span></div>
+        <div class="panel-body">
+          <div style="font-family:var(--serif);font-size:18px;color:var(--fg);margin-bottom:8px;">${esc(un.title)}</div>
+          <div style="font-size:12px;color:var(--fg-2);line-height:1.65;font-weight:300;">${esc(un.body)}</div>
+          ${un.sub ? `<div style="margin-top:12px;font-size:9px;color:var(--fg-4);letter-spacing:.08em;text-transform:uppercase;">${esc(un.sub)}</div>` : ''}
+        </div>
+      </div>`;
+  }
+
+  // ── Invoice stats ──
+  const ip = document.getElementById('inv-stat-paid');  if (ip) ip.textContent = d.invPaid;
+  const id_ = document.getElementById('inv-stat-due');
+  if (id_) { id_.textContent = d.invDue; id_.style.color = d.invDueColor; }
+  const it = document.getElementById('inv-stat-total'); if (it) it.textContent = d.invTotal;
+
+  // ── Invoice table + alert ──
+  const invPanel = document.getElementById('inv-panel');
+  if (invPanel) {
+    const rows = d.invRows.map(r => `
+      <tr>
+        <td data-label="Invoice"><span class="inv-num">${esc(r.num)}</span></td>
+        <td data-label="Description">${esc(r.desc)}</td>
+        <td data-label="Amount" ${r.amountColor ? `style="color:${r.amountColor};font-weight:500;"` : ''}>${esc(r.amount)}</td>
+        <td data-label="Due" ${r.dueColor ? `style="color:${r.dueColor};"` : ''}>${esc(r.due)}</td>
+        <td data-label="Status"><span class="status-sq ${r.statusCls}">${esc(r.statusText)}</span></td>
+      </tr>`).join('');
+    invPanel.innerHTML = `
+      <table class="inv-table">
+        <thead><tr><th>Invoice</th><th>Description</th><th>Amount</th><th>Due</th><th>Status</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      ${d.invAlert ? `<div class="alert-strip"><span class="alert-icon">⚠</span><span class="alert-body">${d.invAlert}</span></div>` : ''}`;
+  }
+
+  // ── Mini timeline (dashboard right column) ──
+  renderDashMS();
+}
+
+/* ════════════════════════════════════════════════
    PROJECTS
 ════════════════════════════════════════════════ */
 const PROJECTS = {
@@ -2606,6 +2713,9 @@ function openProject(name) {
   const proj = getMyProjects().find(p => p.name === name);
   const titleEl = document.getElementById('dash-project-type');
   if (titleEl && proj) titleEl.textContent = proj.type || name;
+
+  // Apply per-project workspace data
+  renderProjectData(name);
 
   document.getElementById('sb-projects').style.display = 'none';
   document.getElementById('sb-project-nav').style.display = 'flex';
