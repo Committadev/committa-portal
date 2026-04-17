@@ -1089,11 +1089,32 @@
       }
 
       /* ══ GLOBAL LAYOUT ══ */
-      html, body { overflow: auto; }
-      .view { position: relative; min-height: 100dvh; }
-      #view-app { flex-direction: column; overflow: auto; }
-      .main { overflow: visible; }
-      .scroll { overflow: visible; height: auto; }
+      html, body { overflow: auto; overflow-x: hidden; }
+
+      /* Hidden views must not take up space on mobile */
+      .view { position: relative; }
+      .view.hidden { display: none !important; }
+
+      /* App shell fills the viewport */
+      #view-app {
+        flex-direction: column;
+        overflow: visible;
+        min-height: 100dvh;
+      }
+
+      /* Workspace: topbar is sticky, scroll fills remainder, nav is fixed at bottom */
+      #view-workspace {
+        flex-direction: column;
+        min-height: 100dvh;
+      }
+      .main { overflow: visible; flex: 1; display: flex; flex-direction: column; }
+      .scroll {
+        flex: 1;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        height: calc(100dvh - 48px - 56px);
+        overflow-x: hidden;
+      }
 
       /* ══ LOGIN ══ */
       .login-center { width: calc(100vw - 40px); }
@@ -1103,10 +1124,11 @@
       #sb-project-nav { display: none !important; }
 
       /* ══ PROJECT PICKER ══ */
-      #view-projects { min-height: 100dvh; overflow: visible; }
+      #view-projects { min-height: 100dvh; overflow: auto; display: flex; flex-direction: column; }
       #view-projects > div:last-child {
         padding: 48px 20px 60px;
         justify-content: flex-start;
+        flex: 1;
       }
       #proj-welcome { font-size: 30px !important; }
       #proj-cards { width: 100% !important; }
@@ -1114,15 +1136,11 @@
       .proj-card-name { font-size: 17px; margin-bottom: 10px; }
 
       /* ══ NEW PROJECT PAGE ══ */
-      #view-new-project { min-height: 100dvh; overflow: visible; }
+      #view-new-project { min-height: 100dvh; overflow: auto; }
       #view-new-project > div:last-child { padding: 32px 20px; align-items: flex-start; }
 
       /* ══ WORKSPACE SHELL ══ */
-      #view-workspace {
-        min-height: 100dvh;
-        overflow: visible;
-        display: flex !important;
-      }
+      /* (handled in GLOBAL LAYOUT above) */
 
       /* ══ TOPBAR ══ */
       .topbar { padding: 0 16px; height: 48px; position: sticky; top: 0; z-index: 10; }
@@ -1252,10 +1270,12 @@
       .alert-strip { padding: 12px 16px; font-size: 11px; }
 
       /* ══ MESSAGES ══ */
-      #page-messages { height: calc(100dvh - 48px - 56px) !important; }
-      .msg-shell { flex-direction: column; height: 100%; }
+      /* .scroll already has the right height; messages fills it */
+      #page-messages { height: 100% !important; display: flex !important; flex-direction: column; }
+      .msg-shell { flex-direction: column; flex: 1; height: 100%; }
       .msg-list { display: none; }
-      .msg-thread { height: 100%; }
+      .msg-thread { flex: 1; min-height: 0; }
+      .msg-scroll { flex: 1; min-height: 0; }
       .msg-thread-head { padding: 12px 14px; }
       .msg-input-bar { padding: 8px 12px; gap: 8px; }
 
@@ -2334,7 +2354,7 @@ function showPage(id) {
   const p = document.getElementById('page-' + id);
   if (!p) return;
   p.classList.add('active');
-  if (id === 'messages') p.style.display = 'block';
+  if (id === 'messages') p.style.display = isMobile() ? 'flex' : 'block';
 
   const n = document.querySelector(`[data-page="${id}"]`);
   if (n) { document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active')); n.classList.add('active'); }
